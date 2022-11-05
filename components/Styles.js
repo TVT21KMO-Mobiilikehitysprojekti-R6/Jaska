@@ -9,13 +9,6 @@ export default  StyleSheet.create({
       alignItems: 'center',
       // justifyContent: 'center',
     },
-    button: {
-        padding:10,
-        borderWidth:2,
-        borderRadius: 5,
-        marginBottom: 5,
-        backgroundColor: "#841584"
-    },
     buttonText: {
       color: "white"
     },
@@ -29,7 +22,7 @@ export default  StyleSheet.create({
       backgroundColor: '#fffacd',
       borderColor: '#ff4500',
       borderWidth: 1,
-      borderRadius5: 5,
+      borderRadius: 20,
       marginLeft: 10,
       marginRight: 10,
     },
@@ -44,16 +37,6 @@ ScrollView: {
   borderColor: '#ff4500',
   padding:20,
 
-},
-buttonMainPage: {
-  marginTop:10, 
-  padding:10,
-  borderWidth:2,
-  borderRadius: 5,
-  marginBottom: 5,
-  addingHorizontal: 10,
-  backgroundColor: "#841584",
- 
 },
 centeredView: {
   flex: 1,
@@ -77,15 +60,12 @@ modalView: {
   elevation: 5,
 },
 button: {
+  margin: 10,
   borderRadius: 20,
   padding: 10,
   elevation: 2,
-},
-buttonOpen: {
-  backgroundColor: '#F194FF',
-},
-buttonClose: {
-  backgroundColor: '#2196F3',
+  marginBottom: 5,
+  backgroundColor: '#2196F3'
 },
 textStyle: {
   color: 'white',
