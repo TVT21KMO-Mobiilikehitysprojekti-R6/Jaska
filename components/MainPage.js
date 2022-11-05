@@ -29,25 +29,15 @@ const allEvents = [
 
 const [modalVisible, setModalVisible] = useState(false);
 
-/*
-const Modal1 = {
-   
-    <View>
-  <Modal 
-      visible={modalVisible}
-      onRequestClose ={close}
-      >
-        <View style={Styles.modal}>
-          <Text> This is modal</Text>
-          <Pressable onPress={() => {
-            setModalVisible(false);
-          }}>
-            <Text style={Styles.close}>Close</Text>
-            </Pressable>
-        </View>
-      </Modal></View>}
-}}
-*/
+const newFuelerHandle = () => { 
+setModalVisible(!modalVisible)
+const event = "fuel"
+navigation.navigate('AddNewEvent', {testKey: event})
+}
+
+
+
+
   return (
     
     <View style={Styles.container}>
@@ -67,13 +57,13 @@ const Modal1 = {
           <View style={Styles.modalView}>
             <Text style={Styles.modalText}>Hello World!</Text>
             <Pressable
-              style={[Styles.button, Styles.buttonClose]}
+              style={[Styles.button, Styles.button]}
               onPress={() => setModalVisible(!modalVisible)}>
               <Text style={Styles.textStyle}>Hide Modal</Text>
             </Pressable><Pressable
-              style={[Styles.button, Styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={Styles.textStyle}>Hide Modal</Text>
+              style={[Styles.button, Styles.button]}
+              onPress={() => newFuelerHandle()}>
+              <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
             </Pressable>
           </View>
         </View>
@@ -96,7 +86,7 @@ const Modal1 = {
               </ScrollView>
               
         </View>
-<Pressable style={Styles.buttonMainPage}  onPress={() => setModalVisible(true)}><Text style={Styles.buttonText}>Lisää tapahtuma</Text></Pressable>
+<Pressable style={Styles.button}  onPress={() => setModalVisible(true)}><Text style={Styles.buttonText}>Lisää tapahtuma</Text></Pressable>
     </View>
 
   );

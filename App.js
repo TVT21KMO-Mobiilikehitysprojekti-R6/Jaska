@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginPage from './components/LoginPage';
 import MainPage from './components/MainPage';
 import StartPage from './components/StartPage';
+import AddNewEvent from './components/AddNewEvent';
 
 
 export default function App() {
@@ -30,6 +31,11 @@ export default function App() {
           name="MainPage" 
           component={MainPage} 
           options={{title: 'MainPage'}}
+          />
+          <Stack.Screen 
+          name="AddNewEvent" 
+          component={AddNewEvent} 
+          options={{title: 'Luo uusi tapahtuma'}}
           />
       </Stack.Navigator>
     </NavigationContainer>
