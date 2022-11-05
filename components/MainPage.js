@@ -74,8 +74,8 @@ navigation.navigate('AddNewEvent', {testKey: event})
         <ScrollView>
               {
                 allEvents.map((id) => (
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}}>
-                    <View style={Styles.allEventsList} key={id.key}>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.key}>
+                    <View style={Styles.allEventsList} >
                       <Text style={Styles.listText}>{id.title}</Text> 
                       <Text style={Styles.listText}>{id.mileage}km</Text>
                       <Text style={Styles.listText}>{id.quantity}{id.units}</Text>
