@@ -1,17 +1,20 @@
 
 import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'react-native'
-import React, { useDebugValue, useState } from 'react'
+import React, { useDebugValue, useState, useEffect } from 'react'
+import {firestore, collection, addDoc, ADDEVENT, serverTimestamp, getAuth, signInWithEmailAndPassword} from '../firebase/Config.js';
+import { onSnapshot, orderBy, query, QuerySnapshot } from 'firebase/firestore';
+
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
 
-export default function StartPage({navigation, setLogin}) {
+export default function StartPage({navigation, route,  setLogin}) {
 
     //const [allEvents, setAllEvents] = useState([])
 
 //let newAllEvents = [ ...]
 const carData = "ABC-123"
-const allEvents = [
+/*const allEvents = [
     { key: 1, event: 'maintenance', title: 'Release Maintenance', mileage: '0'},
     { key: 2, event: 'fuel', title: 'Fueling', mileage: '100'},
     { key: 3, event: 'fuel', title: 'Fueling', mileage: '600'},
@@ -26,6 +29,66 @@ const allEvents = [
     { key: 54, event: 'fuel', title: 'Fueling', mileage: '1500', quantity: "100", units: "L"},
 
 ]
+*/
+const [allEvents, setAllEvents] = useState([]);
+const [notesKey, setNotesKey] = useState(0);
+const [newLitres, setNewLitres] = useState([]); 
+
+
+useEffect(() => {
+  if(route.params?.litres) {
+      const newKey =  notesKey+ 1;
+      const newLitres2 = {key: newKey.toString(), litres: route.params.litres};
+      const newAllEvents = [...allEvents, newLitres2];
+      //storeData(newLitres);
+      //storeDataKey(newKey);
+      setAllEvents(newAllEvents);
+      setNotesKey(newKey);
+      setNewLitres(newLitres2)
+      save();
+  }
+  //getData();
+  //getDataKey();
+},[route.params?.litres])
+
+useEffect(() =>{
+  const q = query(collection(firestore,ADDEVENT), orderBy('id','desc'))
+
+  const unsubscribe = onSnapshot(q,(querySnapshot) => {
+    const tempMessages = []
+    
+    querySnapshot.forEach((doc) => {
+      console.log("aaa")
+      const messageObject = {
+        id: doc.id,
+        text: doc.data().text
+        //litres: doc.data().text.litres,
+        //created: convertFirbaseTimeStampToJS(doc.data().created)
+      }
+      console.log(messageObject)
+      tempMessages.push(messageObject)
+    })
+    setAllEvents(tempMessages)
+  })
+
+  return () => {
+    unsubscribe()
+  }
+}, [])
+
+
+const save = async()=> {
+  console.log("firebase")
+  const docRef = await addDoc(collection(firestore,ADDEVENT),{
+    text: newLitres,
+    //created: serverTimestamp()
+  }).catch(error => console.log(error))
+  //setNewMessage('')
+}
+
+
+
+
 
 const [modalVisible, setModalVisible] = useState(false);
 
@@ -76,9 +139,10 @@ navigation.navigate('AddNewEvent', {testKey: event})
                 allEvents.map((id) => (
                   <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.key}>
                     <View style={Styles.allEventsList} >
+                    <Text style={Styles.listText}>{id.key}</Text> 
                       <Text style={Styles.listText}>{id.title}</Text> 
                       <Text style={Styles.listText}>{id.mileage}km</Text>
-                      <Text style={Styles.listText}>{id.quantity}{id.units}</Text>
+                      <Text style={Styles.listText}>{id.litres}{id.units}</Text>
                     </View>                   
                   </View>
                   ))
