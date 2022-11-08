@@ -32,74 +32,77 @@ const carData = "ABC-123"
 */
 const [allEvents, setAllEvents] = useState([]);
 const [notesKey, setNotesKey] = useState(0);
-const [newLitres, setNewLitres] = useState([]); 
+//const [newLitres, setNewLitres] = useState([]); 
 
 
 useEffect(() => {
+  //getDataLenght()
   if(route.params?.litres) {
-      const newKey =  notesKey+ 1;
-      const newLitres2 = {key: newKey.toString(), litres: route.params.litres};
-      const newAllEvents = [...allEvents, newLitres2];
+      getData();
+      const newKey =  notesKey + 1;
+      const newLitres = {key: newKey.toString(), litres: route.params.litres};
+      setNotesKey(newKey);
+      save(newLitres);
+      //const newAllEvents = [...allEvents, newLitres];
       //storeData(newLitres);
       //storeDataKey(newKey);
-      setAllEvents(newAllEvents);
-      setNotesKey(newKey);
-      setNewLitres(newLitres2)
-      save();
+      //setAllEvents(newAllEvents);
+      //setNewLitres(newLitres2) 
   }
-  //getData();
+    getData();
   //getDataKey();
 },[route.params?.litres])
 
-useEffect(() =>{
-  const q = query(collection(firestore,ADDEVENT), orderBy('id','desc'))
-
-  const unsubscribe = onSnapshot(q,(querySnapshot) => {
-    const tempMessages = []
-    
-    querySnapshot.forEach((doc) => {
-      console.log("aaa")
-      const messageObject = {
-        id: doc.id,
-        text: doc.data().text
-        //litres: doc.data().text.litres,
-        //created: convertFirbaseTimeStampToJS(doc.data().created)
-      }
-      console.log(messageObject)
-      tempMessages.push(messageObject)
-    })
-    setAllEvents(tempMessages)
-  })
-
-  return () => {
-    unsubscribe()
-  }
-}, [])
-
-
-const save = async()=> {
+const save = async (value) => {
   console.log("firebase")
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    text: newLitres,
+    text: value,
     //created: serverTimestamp()
   }).catch(error => console.log(error))
   //setNewMessage('')
 }
 
+  const getData = async => {
+  const q = query(collection(firestore,ADDEVENT), orderBy('text','desc'))
 
+  const unsubscribe = onSnapshot(q,(querySnapshot) => {
+    const tempMessages = []
+    
+    querySnapshot.forEach((doc) => {
+     //console.log("aaa")
+      const messageObject = {
+        //id: doc.id,
+        //text: doc.data().text,
+        key: doc.data().text.key,
+        litres: doc.data().text.litres,
+        //created: convertFirbaseTimeStampToJS(doc.data().created)
+      }
+      //console.log(messageObject)
+      tempMessages.push(messageObject)
+    })
+    setAllEvents(tempMessages)
+   // setNotesKey(allEvents.key)
+    console.log(allEvents)
+  })
 
+  const getDataLenght = async => {
+    const lenght = allEvents.length
+    setNotesKey(lenght)
+  }
 
-
-const [modalVisible, setModalVisible] = useState(false);
-
-const newFuelerHandle = () => { 
-setModalVisible(!modalVisible)
-const event = "fuel"
-navigation.navigate('AddNewEvent', {testKey: event})
+  return () => {
+    unsubscribe()
+  }
 }
 
 
+  const [modalVisible, setModalVisible] = useState(false);
 
+  const newFuelerHandle = () => { 
+  setModalVisible(!modalVisible)
+  const event = "fuel"
+  navigation.navigate('AddNewEvent', {testKey: event})
+  }
 
   return (
     
@@ -140,9 +143,9 @@ navigation.navigate('AddNewEvent', {testKey: event})
                   <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.key}>
                     <View style={Styles.allEventsList} >
                     <Text style={Styles.listText}>{id.key}</Text> 
-                      <Text style={Styles.listText}>{id.title}</Text> 
-                      <Text style={Styles.listText}>{id.mileage}km</Text>
-                      <Text style={Styles.listText}>{id.litres}{id.units}</Text>
+                    <Text style={Styles.listText}>{id.title}</Text> 
+                    <Text style={Styles.listText}>{id.mileage}km</Text> 
+                <Text style={Styles.listText}>{id.litres}{id.units}</Text>
                     </View>                   
                   </View>
                   ))
