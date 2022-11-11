@@ -31,21 +31,22 @@ useLayoutEffect( () => {
 }, [])  
 
 useEffect(() => {
-  if(route.params?.litres) {
+  if(route.params?.price) {
       getData();
       const newLitres = {litres: route.params.litres};
       const newMileage = {mileage: route.params.mileage};
       const newPrice = {price: route.params.price};
+      const newWash = {wash: route.params.wash};
       //console.log(newMileage);
-      toFireBase(newLitres, newMileage, newPrice);
+      toFireBase(newLitres, newMileage, newPrice, newWash);
   }
     getData();
-},[route.params?.litres])
+},[route.params?.price])
 
-const toFireBase = async (litres,mileage,price) => {
+const toFireBase = async (litres,mileage,price,wash) => {
   //console.log("toFirebase")
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    data: litres, mileage, price
+    data: litres, mileage, price, wash,
 
   }).catch(error => console.log(error))
   console.log("testi")
@@ -62,7 +63,8 @@ const toFireBase = async (litres,mileage,price) => {
         id: doc.id,   //luetaan firebasesta automaattinen avain
         litres: doc.data().data.litres, 
         mileage: doc.data().mileage.mileage,  
-        price: doc.data().price.price    
+        price: doc.data().price.price, 
+        wash: doc.data().wash.wash
       }
       tempMessages.push(messageObject)
     })  
