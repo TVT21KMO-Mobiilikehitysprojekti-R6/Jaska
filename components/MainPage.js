@@ -124,8 +124,8 @@ const toFireBase = async (litres,mileage,price,wash) => {
                   <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.id}>
                     <View style={Styles.allEventsList} >
                     <Text style={Styles.listText}>{id.mileage}km</Text> 
-                <Text style={Styles.listText}>{id.litres}L</Text>
-                <Text style={Styles.listText}>{id.price}€</Text>
+                    <Text style={Styles.listText}>{id.litres}L</Text>
+                    <Text style={Styles.listText}>{id.price}€</Text>
                     </View>                   
                   </View>
                   ))
