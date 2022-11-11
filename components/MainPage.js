@@ -35,16 +35,17 @@ useEffect(() => {
       getData();
       const newLitres = {litres: route.params.litres};
       const newMileage = {mileage: route.params.mileage};
+      const newPrice = {price: route.params.price};
       //console.log(newMileage);
-      toFireBase(newLitres, newMileage);
+      toFireBase(newLitres, newMileage, newPrice);
   }
     getData();
 },[route.params?.litres])
 
-const toFireBase = async (litres,mileage) => {
+const toFireBase = async (litres,mileage,price) => {
   //console.log("toFirebase")
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    data: litres, mileage
+    data: litres, mileage, price
 
   }).catch(error => console.log(error))
   console.log("testi")
@@ -60,7 +61,8 @@ const toFireBase = async (litres,mileage) => {
       const messageObject = {
         id: doc.id,   //luetaan firebasesta automaattinen avain
         litres: doc.data().data.litres, 
-        mileage: doc.data().mileage.mileage      
+        mileage: doc.data().mileage.mileage,  
+        price: doc.data().price.price    
       }
       tempMessages.push(messageObject)
     })  
@@ -70,9 +72,9 @@ const toFireBase = async (litres,mileage) => {
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const newFuelerHandle = () => { 
+  const newFuelerHandle = (event) => { 
   setModalVisible(!modalVisible)
-  const event = "fuel"
+  //const event = eventInput //otin pois jotta vähemmän muuttujia ja siistimpi kun tuodaan muuttuja event
   navigation.navigate('AddNewEvent', {testKey: event})
   }
 
@@ -100,8 +102,13 @@ const toFireBase = async (litres,mileage) => {
               <Text style={Styles.textStyle}>Hide Modal</Text>
             </Pressable><Pressable
               style={[Styles.button, Styles.button]}
-              onPress={() => newFuelerHandle()}>
+              onPress={() => newFuelerHandle('fuel')}>
               <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
+            </Pressable>
+            <Pressable
+              style={[Styles.button, Styles.button]}
+              onPress={() => newFuelerHandle('wash')}>
+              <Text style={Styles.textStyle}>Uusi Pesu</Text>
             </Pressable>
           </View>
         </View>
@@ -116,6 +123,7 @@ const toFireBase = async (litres,mileage) => {
                     <View style={Styles.allEventsList} >
                     <Text style={Styles.listText}>{id.mileage}km</Text> 
                 <Text style={Styles.listText}>{id.litres}L</Text>
+                <Text style={Styles.listText}>{id.price}€</Text>
                     </View>                   
                   </View>
                   ))
