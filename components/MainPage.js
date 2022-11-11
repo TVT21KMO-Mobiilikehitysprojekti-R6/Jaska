@@ -1,42 +1,77 @@
 
 import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'react-native'
-import React, { useDebugValue, useState } from 'react'
+import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'react'
+import {firestore, collection, addDoc, ADDEVENT, serverTimestamp, getAuth, signInWithEmailAndPassword} from '../firebase/Config.js';
+import { onSnapshot, orderBy, query, QuerySnapshot } from 'firebase/firestore';
+
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
-export default function StartPage({navigation, setLogin}) {
+export default function StartPage({navigation, route,  setLogin}) {
 
-    //const [allEvents, setAllEvents] = useState([])
-
-//let newAllEvents = [ ...]
 const carData = "ABC-123"
-const allEvents = [
-    { key: 1, event: 'maintenance', title: 'Release Maintenance', mileage: '0'},
-    { key: 2, event: 'fuel', title: 'Fueling', mileage: '100'},
-    { key: 3, event: 'fuel', title: 'Fueling', mileage: '600'},
-    { key: 4, event: 'fuel', title: 'Fueling', mileage: '1500', quantity: "100", units: "L"},
-    { key: 5, event: 'maintenance', title: 'Release Maintenance', mileage: '0'},
-    { key: 12, event: 'fuel', title: 'Fueling', mileage: '100'},
-    { key: 13, event: 'fuel', title: 'Fueling', mileage: '600'},
-    { key: 14, event: 'fuel', title: 'Fueling', mileage: '1500', quantity: "100", units: "L"},
-    { key: 21, event: 'maintenance', title: 'Release Maintenance', mileage: '0'},
-    { key: 32, event: 'fuel', title: 'Fueling', mileage: '100'},
-    { key: 43, event: 'fuel', title: 'Fueling', mileage: '600'},
-    { key: 54, event: 'fuel', title: 'Fueling', mileage: '1500', quantity: "100", units: "L"},
 
-]
+const [allEvents, setAllEvents] = useState([]);
 
-const [modalVisible, setModalVisible] = useState(false);
+//Tämä lisää stack navigaattoriin napin
+useLayoutEffect( () => {
+  navigation.setOptions({
+      headerRight: () => (
+          <Feather
+              style={Styles.navButton}
+              name="edit"
+              size={24}
+              color="black"
+              onPress={ () => navigation.navigate('Edit')}
+          />  
+      ),  
+  }) 
+}, [])  
 
-const newFuelerHandle = () => { 
-setModalVisible(!modalVisible)
-const event = "fuel"
-navigation.navigate('AddNewEvent', {testKey: event})
+useEffect(() => {
+  if(route.params?.litres) {
+      getData();
+      const newLitres = {litres: route.params.litres};
+      toFireBase(newLitres);
+  }
+    getData();
+},[route.params?.litres])
+
+const toFireBase = async (value) => {
+  //console.log("toFirebase")
+  const docRef = await addDoc(collection(firestore,ADDEVENT),{
+    data: value,
+
+  }).catch(error => console.log(error))
+  console.log("testi")
 }
 
+  const getData = async => {
+  const q = query(collection(firestore,ADDEVENT), orderBy('data','desc'))
 
+  const unsubscribe = onSnapshot(q,(querySnapshot) => {
+    const tempMessages = []
+    
+    querySnapshot.forEach((doc) => {
+      const messageObject = {
+        id: doc.id,   //luetaan firebasesta automaattinen avain
+        litres: doc.data().data.litres,       
+      }
+      tempMessages.push(messageObject)
+    }) 
+    setAllEvents(tempMessages)
+  }) 
+}
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const newFuelerHandle = () => { 
+  setModalVisible(!modalVisible)
+  const event = "fuel"
+  navigation.navigate('AddNewEvent', {testKey: event})
+  }
 
   return (
     
@@ -74,11 +109,10 @@ navigation.navigate('AddNewEvent', {testKey: event})
         <ScrollView>
               {
                 allEvents.map((id) => (
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.key}>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.id}>
                     <View style={Styles.allEventsList} >
-                      <Text style={Styles.listText}>{id.title}</Text> 
-                      <Text style={Styles.listText}>{id.mileage}km</Text>
-                      <Text style={Styles.listText}>{id.quantity}{id.units}</Text>
+                    <Text style={Styles.listText}>{id.mileage}km</Text> 
+                <Text style={Styles.listText}>{id.litres}L</Text>
                     </View>                   
                   </View>
                   ))

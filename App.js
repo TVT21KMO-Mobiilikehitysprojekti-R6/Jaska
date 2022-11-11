@@ -6,6 +6,7 @@ import LoginPage from './components/LoginPage';
 import MainPage from './components/MainPage';
 import StartPage from './components/StartPage';
 import AddNewEvent from './components/AddNewEvent';
+import { firestone } from './firebase/Config'
 
 
 export default function App() {
