@@ -3,11 +3,14 @@ import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'r
 import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'react'
 import {firestore, collection, addDoc, ADDEVENT, serverTimestamp, getAuth, signInWithEmailAndPassword} from '../firebase/Config.js';
 import { onSnapshot, orderBy, query, QuerySnapshot } from 'firebase/firestore';
+import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
+
 
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+
 
 export default function StartPage({navigation, route,  setLogin}) {
 
@@ -43,33 +46,40 @@ useEffect(() => {
     getData();
 },[route.params?.price])
 
-const toFireBase = async (litres,mileage,price,wash) => {
+const toFireBase = async (litres,mileage,price,wash ) => {
   //console.log("toFirebase")
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    data: litres, mileage, price, wash,
+    data: litres, mileage, price, wash, 
+    created: serverTimestamp()
+  
 
   }).catch(error => console.log(error))
-  console.log("testi")
+  //console.log("testi")
 }
 
   const getData = async => {
-  const q = query(collection(firestore,ADDEVENT), orderBy('data','desc'))
+  const q = query(collection(firestore,ADDEVENT), orderBy('created','desc'))
 
   const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = []
     
     querySnapshot.forEach((doc) => {
       const messageObject = {
-        id: doc.id,   //luetaan firebasesta automaattinen avain
+        id: doc.id,                           //luetaan firebasesta automaattinen avain
         litres: doc.data().data.litres, 
         mileage: doc.data().mileage.mileage,  
         price: doc.data().price.price, 
-        wash: doc.data().wash.wash
+        wash: doc.data().wash.wash,
+        created: convertFirbaseTimeStampToJS(doc.data().created)
       }
       tempMessages.push(messageObject)
     })  
     setAllEvents(tempMessages)
+    //console.log(tempMessages)
   }) 
+  return () => {
+    unsubscribe()
+  }
 }
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -126,6 +136,7 @@ const toFireBase = async (litres,mileage,price,wash) => {
                     <Text style={Styles.listText}>{id.mileage}km</Text> 
                     <Text style={Styles.listText}>{id.litres}L</Text>
                     <Text style={Styles.listText}>{id.price}€</Text>
+                    <Text style={Styles.listText}>{id.created}</Text>  
                     </View>                   
                   </View>
                   ))
