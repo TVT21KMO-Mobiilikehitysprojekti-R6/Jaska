@@ -8,7 +8,7 @@ export default function AddNewEvent({route, navigation}) {
 
   const [text, onChangeText] = React.useState('Useless Text');
   const [litres, onChangeLitres] = React.useState(null);
-  const [kilometers, onChangeKilometers] = React.useState(null);
+  const [mileage, onChangeMileage] = React.useState(null);
 
 
   const acceptFuel = () => {
@@ -16,7 +16,7 @@ export default function AddNewEvent({route, navigation}) {
         alert('Somethin went wrong!!')
         console.log("tyhjä lisäys kenttä")
     } else {
-        navigation.navigate('MainPage', {litres: litres})
+        navigation.navigate('MainPage', {litres: litres, mileage: mileage})
     }   
 }
     const status = route.params.testKey
@@ -35,8 +35,8 @@ export default function AddNewEvent({route, navigation}) {
        <Text>Anna Kilometrit</Text>
             <TextInput
               style={Styles.button}
-              onChangeText={onChangeKilometers}
-              value={kilometers}
+              onChangeText={onChangeMileage}
+              value={mileage}
               placeholder="Tähän kilometrit"
               keyboardType="numeric"
             />

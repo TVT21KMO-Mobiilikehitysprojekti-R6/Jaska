@@ -34,15 +34,17 @@ useEffect(() => {
   if(route.params?.litres) {
       getData();
       const newLitres = {litres: route.params.litres};
-      toFireBase(newLitres);
+      const newMileage = {mileage: route.params.mileage};
+      //console.log(newMileage);
+      toFireBase(newLitres, newMileage);
   }
     getData();
 },[route.params?.litres])
 
-const toFireBase = async (value) => {
+const toFireBase = async (litres,mileage) => {
   //console.log("toFirebase")
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    data: value,
+    data: litres, mileage
 
   }).catch(error => console.log(error))
   console.log("testi")
@@ -57,10 +59,11 @@ const toFireBase = async (value) => {
     querySnapshot.forEach((doc) => {
       const messageObject = {
         id: doc.id,   //luetaan firebasesta automaattinen avain
-        litres: doc.data().data.litres,       
+        litres: doc.data().data.litres, 
+        mileage: doc.data().mileage.mileage      
       }
       tempMessages.push(messageObject)
-    }) 
+    })  
     setAllEvents(tempMessages)
   }) 
 }
