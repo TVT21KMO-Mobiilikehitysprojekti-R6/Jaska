@@ -12,7 +12,7 @@ import { firestone } from './firebase/Config'
 export default function App() {
 
   const Stack = createNativeStackNavigator();
-
+//const [logged, setLogged] = useState(false);
 
   return (
 
@@ -41,6 +41,6 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
  
-   
+ 
   );
 }
