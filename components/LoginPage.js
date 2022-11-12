@@ -6,20 +6,23 @@ import MainPage from './MainPage';
 
 export default function LoginPage({navigation, setLogin}) {
 
-  const [username, setUserName] = useState(''); // anna joku nimi
-  const [password, setPassword] = useState(''); // anna joku nimi
+  const [username, setUserName] = useState('mokko@testi.fi'); // anna joku nimi
+  const [password, setPassword] = useState('testi123'); // anna joku nimi
     /* const [error, setError] = useState(null);
   
     const handleSubmit = () => {
       setLogin(username, password);
     }
  */
+    const [login2, setLogin2] = useState(false)
+
     const login = () => {
       const auth = getAuth()
       signInWithEmailAndPassword(auth,username,password)
       .then((userCredential) => {
-        console.log(userCredential.user)
-        setLogin(true)
+        //console.log(userCredential.user)
+        setLogin2(true)
+        navigation.navigate("MainPage", {testKey2: login2})
       }).catch((error) => {
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
           alert("Inalid credentials!")
@@ -38,13 +41,13 @@ export default function LoginPage({navigation, setLogin}) {
         <View style={Styles.input}>
           <TextInput  
             sstyle={{flex: 0.75}}
-            onChangeText={text => setUserName(text)}
+            //onChangeText={text => setUserName(text)}
             value={username}
             placeholder="Give your name to login..."       
             />
             <TextInput  
             sstyle={{flex: 0.75}}
-            onChangeText={text => setPassword(text)}
+            //onChangeText={text => setPassword(text)}
             value={password}
             placeholder="Give your pasword to login..."       
             />

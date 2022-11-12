@@ -2,6 +2,7 @@
 import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'react-native'
 import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'react'
 import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
+import {onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, getAuth, signInWithEmailAndPassword} from '../firebase/Config'
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
@@ -12,9 +13,10 @@ import LoginPage from './LoginPage';
 export default function MainPage({navigation, route}) {
 const carData = "ABC-123"
 const [allEvents, setAllEvents] = useState([]);
-const [logged, setLogged] = useState(1);
+const [logged, setLogged] = useState(false);
  
 
+console.log("logged = ", logged)
 
 //Tämä lisää stack navigaattoriin napin
 useLayoutEffect( () => {
@@ -30,6 +32,12 @@ useLayoutEffect( () => {
       ),  
   }) 
 }, [])  
+
+useEffect(() => {
+  if(route.params?.testKey) {
+      setLogged(true)   
+  }
+},[route.params?.testKey])
 
 useEffect(() => {
   if(route.params?.price) {
@@ -142,9 +150,9 @@ const toFireBase = async (litres,mileage,price,wash ) => {
 <Pressable style={Styles.button}  onPress={() => setModalVisible(true)}><Text style={Styles.buttonText}>Lisää tapahtuma</Text></Pressable>
     </View>
 
-  );
+  )
 }else {
-  return <LoginPage setLogin={setLogged}/>
+  return <LoginPage />
 };
 } 
 
