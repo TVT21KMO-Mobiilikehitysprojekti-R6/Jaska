@@ -10,13 +10,13 @@ import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
 
 
-export default function MainPage({navigation, route}) {
-const carData = "ABC-123"
-const [allEvents, setAllEvents] = useState([]);
-const [logged, setLogged] = useState(false);
+export default function MainPage({navigation, route, login2}) {
+  const carData = "ABC-123"
+  const [allEvents, setAllEvents] = useState([]);
+  const [logged, setLogged] = useState(false);
  
-
-console.log("logged = ", logged)
+//setLogged(true);
+//console.log("logged = ", login2)
 
 //Tämä lisää stack navigaattoriin napin
 useLayoutEffect( () => {
@@ -33,11 +33,12 @@ useLayoutEffect( () => {
   }) 
 }, [])  
 
-useEffect(() => {
-  if(route.params?.testKey) {
-      setLogged(true)   
+useEffect(async () => {
+  if(route.params?.login2) {
+      setLogged(true)  
+      console.log("logged = ", login2) 
   }
-},[route.params?.testKey])
+},[route.params?.login2])
 
 useEffect(() => {
   if(route.params?.price) {
@@ -152,7 +153,8 @@ const toFireBase = async (litres,mileage,price,wash ) => {
 
   )
 }else {
-  return <LoginPage />
+  console.log("EI onnistu");
+  //navigation.navigate("LoginPage", {setLogin} ) 
 };
 } 
 

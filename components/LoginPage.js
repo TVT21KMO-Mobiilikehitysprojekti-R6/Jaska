@@ -14,6 +14,7 @@ export default function LoginPage({navigation, setLogin}) {
       setLogin(username, password);
     }
  */
+console.log(setLogin)
     const [login2, setLogin2] = useState(false)
 
     const login = () => {
@@ -22,7 +23,7 @@ export default function LoginPage({navigation, setLogin}) {
       .then((userCredential) => {
         //console.log(userCredential.user)
         setLogin2(true)
-        navigation.navigate("MainPage", {testKey2: login2})
+        navigation.navigate("MainPage", {login2: login2})
       }).catch((error) => {
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
           alert("Inalid credentials!")
