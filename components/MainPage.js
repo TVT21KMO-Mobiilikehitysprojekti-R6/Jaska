@@ -107,7 +107,8 @@ const toFireBase = async (litres,mileage,price,wash ) => {
         }}>
         <View style={Styles.centeredView}>
           <View style={Styles.modalView}>
-            <Text style={Styles.modalText}>Hello World!</Text>
+            <Text style={Styles.modalText}>Valitse tapahtuma, </Text>
+            <Text style={Styles.modalText}>jonka haluat lisätä.</Text>
             <Pressable
               style={[Styles.button, Styles.button]}
               onPress={() => setModalVisible(!modalVisible)}>
