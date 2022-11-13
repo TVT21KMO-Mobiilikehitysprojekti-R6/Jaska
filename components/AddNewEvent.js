@@ -20,7 +20,7 @@ export default function AddNewEvent({route, navigation}) {
 
   const acceptEvent = (event) => {
     if (event === '') {
-        alert('Somethin went wrong!!')
+        alert('Something went wrong!!')
         console.log("tyhjä lisäys kenttä")
     } if (event === 'fuel') {
         navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash})

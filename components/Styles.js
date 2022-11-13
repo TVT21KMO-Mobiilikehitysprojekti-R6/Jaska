@@ -2,28 +2,29 @@ import {Platform, StyleSheet} from 'react-native';
 import Constants from 'expo-constants';
 
 export default  StyleSheet.create({
-    container: {
+  container: {
       flex: 1,
       backgroundColor: '#fff',
       paddingTop: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
       alignItems: 'center',
       // justifyContent: 'center',
-    },
+  },
     
-    allEventsList: {
-      display: 'flex',
-      flexDirection: 'row',
-      padding:10,
-      marginTop:5,
-      marginBottom:10,
-      width: '90%',
-      backgroundColor: '#ffffff',
-      borderColor: '#000000',
-      borderWidth: 2,
-      borderRadius: 0,
-      marginLeft: 10,
-      marginRight: 10,
-    },
+  allEventsList: {
+    display: 'flex',
+    flexDirection: 'row',
+    padding:10,
+    marginTop:5,
+    marginBottom:10,
+    width: '100%',
+    justifyContent:'space-between',
+    backgroundColor: '#ffffff',
+    borderColor: '#000000',
+    borderWidth: 2,
+    borderRadius: 5,
+    marginLeft: 5,
+    marginRight: 5,
+  },
   
 listText:{ //teksti ruutujen tekstien välit
   display: 'flex',
@@ -106,7 +107,9 @@ heading: {  // yläpalkki sis.auto rekkari
       marginTop:-45,
       marginBottom:10,
       textAlign:'center',
-      
+      fontWeight: 'bold',
+      fontSize: 16,
+      color: 'white'
 
 }
   
