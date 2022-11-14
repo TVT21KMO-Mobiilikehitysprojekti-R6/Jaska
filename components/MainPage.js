@@ -33,7 +33,7 @@ useLayoutEffect( () => {
   }) 
 }, [])  
 
-useEffect(async () => {
+useEffect( () => {
   if(route.params?.login2) {
       setLogged(true)  
       console.log("logged = ", login2) 
