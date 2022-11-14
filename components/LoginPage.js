@@ -27,6 +27,7 @@ export default function LoginPage({navigation, setLogin}) {
             sstyle={{flex: 0.75}}
             onChangeText={(username) => setUserName(username)}
             value={username}
+            keyboardType='email-address'
             placeholder="Give your name to login..."       
             />
           </View>

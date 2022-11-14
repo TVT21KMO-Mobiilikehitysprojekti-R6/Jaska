@@ -95,49 +95,48 @@ const toFireBase = async (litres,mileage,price,wash ) => {
     <View style={Styles.container}>
       <Text style={Styles.heading}> Tapahtumat {carData} </Text>
         <View style={Styles.ScrollView}>
-        
-        <View style={Styles.centeredView}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={Styles.centeredView}>
-          <View style={Styles.modalView}>
-            <Text style={Styles.modalText}>Valitse tapahtuma, </Text>
-            <Text style={Styles.modalText}>jonka haluat lisätä.</Text>
-            <Pressable
-              style={[Styles.button, Styles.button]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={Styles.textStyle}>Hide Modal</Text>
-            </Pressable><Pressable
-              style={[Styles.button, Styles.button]}
-              onPress={() => newFuelerHandle('fuel')}>
-              <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
-            </Pressable>
-            <Pressable
-              style={[Styles.button, Styles.button]}
-              onPress={() => newFuelerHandle('wash')}>
-              <Text style={Styles.textStyle}>Uusi Pesu</Text>
-            </Pressable>
+          <View style={Styles.centeredView}>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+              }}>
+              <View style={Styles.centeredView}>
+                <View style={Styles.modalView}>
+                  <Text style={Styles.modalText}>Valitse tapahtuma, </Text>
+                  <Text style={Styles.modalText}>jonka haluat lisätä.</Text>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={Styles.textStyle}>Hide Modal</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => newFuelerHandle('fuel')}>
+                    <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => newFuelerHandle('wash')}>
+                    <Text style={Styles.textStyle}>Uusi Pesu</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </Modal>
           </View>
-        </View>
-      </Modal>
-    </View>
 
-
-        <ScrollView>
+          <ScrollView>
               {
                 allEvents.map((id) => (
                   <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.id}>
                     <View style={Styles.allEventsList} >
-                    <Text style={Styles.listText}>{id.mileage}km</Text> 
-                    <Text style={Styles.listText}>{id.litres}L</Text>
-                    <Text style={Styles.listText}>{id.price}€</Text>
-                    <Text style={Styles.listText}>{id.created}</Text>  
+                      <Text style={Styles.listText}>{id.mileage}km</Text> 
+                      <Text style={Styles.listText}>{id.litres}L</Text>
+                      <Text style={Styles.listText}>{id.price}€</Text>
+                      <Text style={Styles.listText}>{id.created}</Text>  
                     </View>                   
                   </View>
                   ))
