@@ -1,22 +1,22 @@
 
 import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'react-native'
 import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'react'
-import {firestore, collection, addDoc, ADDEVENT, serverTimestamp, getAuth, signInWithEmailAndPassword} from '../firebase/Config.js';
-import { onSnapshot, orderBy, query, QuerySnapshot } from 'firebase/firestore';
 import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
-
-
+import {onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, getAuth, signInWithEmailAndPassword} from '../firebase/Config'
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import LoginPage from './LoginPage';
 
 
-export default function StartPage({navigation, route,  setLogin}) {
-
-const carData = "ABC-123"
-
-const [allEvents, setAllEvents] = useState([]);
+export default function MainPage({navigation, route, login2}) {
+  const carData = "ABC-123"
+  const [allEvents, setAllEvents] = useState([]);
+  const [logged, setLogged] = useState(false);
+ 
+//setLogged(true);
+//console.log("logged = ", login2)
 
 //Tämä lisää stack navigaattoriin napin
 useLayoutEffect( () => {
@@ -33,6 +33,13 @@ useLayoutEffect( () => {
   }) 
 }, [])  
 
+useEffect( () => {
+  if(route.params?.login2) {
+      setLogged(true)  
+      console.log("logged = ", login2) 
+  }
+},[route.params?.login2])
+
 useEffect(() => {
   if(route.params?.price) {
       getData();
@@ -40,7 +47,6 @@ useEffect(() => {
       const newMileage = {mileage: route.params.mileage};
       const newPrice = {price: route.params.price};
       const newWash = {wash: route.params.wash};
-      //console.log(newMileage);
       toFireBase(newLitres, newMileage, newPrice, newWash);
   }
     getData();
@@ -50,11 +56,8 @@ const toFireBase = async (litres,mileage,price,wash ) => {
   //console.log("toFirebase")
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
     data: litres, mileage, price, wash, 
-    created: serverTimestamp()
-  
-
+    created: serverTimestamp(),
   }).catch(error => console.log(error))
-  //console.log("testi")
 }
 
   const getData = async => {
@@ -75,7 +78,6 @@ const toFireBase = async (litres,mileage,price,wash ) => {
       tempMessages.push(messageObject)
     })  
     setAllEvents(tempMessages)
-    //console.log(tempMessages)
   }) 
   return () => {
     unsubscribe()
@@ -90,7 +92,9 @@ const toFireBase = async (litres,mileage,price,wash ) => {
   navigation.navigate('AddNewEvent', {testKey: event})
   }
 
-  return (
+    
+  if ( logged){
+  return(
     
     <View style={Styles.container}>
       <Text style={Styles.heading}> Tapahtumat {carData} </Text>
@@ -133,10 +137,12 @@ const toFireBase = async (litres,mileage,price,wash ) => {
                 allEvents.map((id) => (
                   <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.id}>
                     <View style={Styles.allEventsList} >
-                      <Text style={Styles.listText}>{id.mileage}km</Text> 
-                      <Text style={Styles.listText}>{id.litres}L</Text>
-                      <Text style={Styles.listText}>{id.price}€</Text>
-                      <Text style={Styles.listText}>{id.created}</Text>  
+
+                    {id.mileage!= null && <Text style={Styles.listText}>{id.mileage}Km</Text>}
+                    {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
+                    {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
+                    <Text style={Styles.listText}>{id.created}</Text>  
+                    
                     </View>                   
                   </View>
                   ))
@@ -147,5 +153,10 @@ const toFireBase = async (litres,mileage,price,wash ) => {
 <Pressable style={Styles.button}  onPress={() => setModalVisible(true)}><Text style={Styles.buttonText}>Lisää tapahtuma</Text></Pressable>
     </View>
 
-  );
-}
+  )
+}else {
+  console.log("EI onnistu");
+  //navigation.navigate("LoginPage", {setLogin} ) 
+};
+} 
+

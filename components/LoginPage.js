@@ -1,23 +1,40 @@
 import { View, Text, SafeAreaView, Button, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import Styles from './Styles';
+import {getAuth, signInWithEmailAndPassword} from "../firebase/Config.js";
+import MainPage from './MainPage';
 
 export default function LoginPage({navigation, setLogin}) {
 
-  const [username, setUserName] = useState(''); // anna joku nimi
-
-  const login = () => {
-    navigation.navigate('MainPage')
-    /*
-    if (username === '') {
-      alert('no user!!')
-      console.log('no user!!')
+  const [username, setUserName] = useState('mokko@testi.fi'); // anna joku nimi
+  const [password, setPassword] = useState('testi123'); // anna joku nimi
+    /* const [error, setError] = useState(null);
+  
+    const handleSubmit = () => {
+      setLogin(username, password);
     }
-    else{  
-      navigation.navigate('Home', {testKey: username})
-      setUserName('')
-    }*/
-  }
+ */
+console.log(setLogin)
+    const [login2, setLogin2] = useState(false)
+
+    const login = () => {
+      const auth = getAuth()
+      signInWithEmailAndPassword(auth,username,password)
+      .then((userCredential) => {
+        //console.log(userCredential.user)
+        setLogin2(true)
+        navigation.navigate("MainPage", {login2: login2})
+      }).catch((error) => {
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+          alert("Inalid credentials!")
+        } else if (error.code === 'auth/too-many-requests') {
+          alert("Too many attempts, your account will be locked temporarility")
+        } else {
+          console.log (error.code)
+          console.log (error.message)
+        }
+      })
+    } 
 
   return (
     <View style={Styles.container}>
@@ -25,15 +42,21 @@ export default function LoginPage({navigation, setLogin}) {
         <View style={Styles.input}>
           <TextInput  
             sstyle={{flex: 0.75}}
-            onChangeText={(username) => setUserName(username)}
+            //onChangeText={text => setUserName(text)}
             value={username}
             keyboardType='email-address'
             placeholder="Give your name to login..."       
             />
+            <TextInput  
+            sstyle={{flex: 0.75}}
+            //onChangeText={text => setPassword(text)}
+            value={password}
+            placeholder="Give your pasword to login..."       
+            />
           </View>
         <View>
           <Button style={Styles.buttonLogIn} 
-            title="Submit" r
+            title="Submit" 
             onPress={login}
             color="#841584"
             />
