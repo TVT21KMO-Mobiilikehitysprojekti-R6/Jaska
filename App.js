@@ -21,7 +21,7 @@ export default function App() {
         <Stack.Screen 
           name="LoginPage" 
           component={LoginPage} 
-          options={{title: 'Kiraudu sisään'}}
+          options={{title: 'Kirjaudu sisään'}}
           />
           <Stack.Screen 
           name="StartPage" 

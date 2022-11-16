@@ -44,6 +44,7 @@ console.log(setLogin)
             sstyle={{flex: 0.75}}
             //onChangeText={text => setUserName(text)}
             value={username}
+            keyboardType='email-address'
             placeholder="Give your name to login..."       
             />
             <TextInput  
