@@ -23,7 +23,7 @@ console.log(setLogin)
       .then((userCredential) => {
         //console.log(userCredential.user)
         setLogin2(true)
-        navigation.navigate("MainPage", {login2: login2})
+        navigation.navigate("MainPage", {login5: username})
       }).catch((error) => {
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
           alert("Inalid credentials!")

@@ -10,7 +10,7 @@ import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
 
 
-export default function MainPage({navigation, route, login2}) {
+export default function MainPage({navigation, route, login5}) {
   const carData = "ABC-123"
   const [allEvents, setAllEvents] = useState([]);
   const [logged, setLogged] = useState(false);
@@ -34,11 +34,11 @@ useLayoutEffect( () => {
 }, [])  
 
 useEffect( () => {
-  if(route.params?.login2) {
+  if(route.params?.login5) {
       setLogged(true)  
-      console.log("logged = ", login2) 
+      console.log("logged = ", route.params?.login5) 
   }
-},[route.params?.login2])
+},[route.params?.login5])
 
 useEffect(() => {
   if(route.params?.price) {
