@@ -63,7 +63,7 @@ modalView: { // lisaa tapahtumasta aukeavan ponnahdus ikkunan speksit
   shadowOpacity: 0.25,
   shadowRadius: 4,
   elevation: 0,
-  marginTop:97,
+  marginTop:110,
 },
 
 
@@ -104,7 +104,7 @@ heading: {  // yläpalkki sis.auto rekkari
       width: '96%',
       height: 25,
       backgroundColor: '#008000',
-      marginTop:-45,
+      marginTop:0,
       marginBottom:10,
       textAlign:'center',
       fontWeight: 'bold',
