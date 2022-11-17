@@ -1,8 +1,9 @@
 import { View, Text, SafeAreaView, Button, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import Styles from './Styles';
-import {getAuth, signInWithEmailAndPassword} from "../firebase/Config.js";
+import {getAuth, signInWithEmailAndPassword, onAuthStateChanged} from "../firebase/Config.js";
 import MainPage from './MainPage';
+
 
 export default function LoginPage({navigation, setLogin}) {
 
@@ -14,6 +15,7 @@ export default function LoginPage({navigation, setLogin}) {
       setLogin(username, password);
     }
  */
+    
 console.log(setLogin)
     const [login2, setLogin2] = useState(false)
 

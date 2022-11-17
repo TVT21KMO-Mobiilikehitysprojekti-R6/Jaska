@@ -2,7 +2,8 @@
 import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'react-native'
 import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'react'
 import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
-import {onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, getAuth, signInWithEmailAndPassword} from '../firebase/Config'
+import {onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
@@ -10,13 +11,29 @@ import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
 
 
-export default function MainPage({navigation, route, login5}) {
+export default function MainPage({navigation, route, login5, username, password}) {
   const carData = "ABC-123"
   const [allEvents, setAllEvents] = useState([]);
   const [logged, setLogged] = useState(false);
  
 //setLogged(true);
 //console.log("logged = ", login2)
+ const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        const uid = user.uid;
+        console.log(uid)
+        // ...
+      } else {
+        console.log("2222")
+
+        // User is signed out
+        // ...
+      }
+    });  
+
 
 //Tämä lisää stack navigaattoriin napin
 useLayoutEffect( () => {
