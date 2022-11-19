@@ -38,7 +38,7 @@ export default function AddNewEvent({route, navigation}) {
     } if (event === 'fuel') {
         navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID})
     } if (event === 'wash') {
-      navigation.navigate('MainPage', {wash: wash, price: price, litres: litres, mileage: mileage})
+      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID})
   }   
 }
     const status = route.params.testKey

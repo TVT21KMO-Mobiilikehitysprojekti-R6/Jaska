@@ -91,7 +91,8 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
       const newPrice = {price: route.params.price};
       const newWash = {wash: route.params.wash};
       const newUser = {user: route.params.userID}
-      toFireBase(newLitres, newMileage, newPrice, newWash, newUser);
+      console.log(newUser)
+      toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
   }
   //getUserID();
     getData();
@@ -99,9 +100,9 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
 
 const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
  console.log("looggden in getdata " + route.params?.login5)
-  const q = query(collection(firestore,ADDEVENT), where("litres", "==", "1"/* route.params?.login5 */), orderBy('created','desc'))
-  const querySnapshot = await getDocs(q);
-  console.log(querySnapshot) 
+  const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
+  const querySnapshot = await getDocs(q); 
+  const tempMessages = [] 
   querySnapshot.forEach((doc) => {
     const messageObject = {
       id: doc.id,                           //luetaan firebasesta automaattinen avain
