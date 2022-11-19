@@ -9,18 +9,19 @@ import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
-import {getFirestore, doc, deleteDoc} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
+import {getFirestore, doc, deleteDoc, getDocs, where} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
 
-const db = getFirestore();         //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
+const db = getFirestore();         //tämä piti olla ehkä tässä muuten meni delete vituiksi, siirto omalla vastuulla ehkä
 
 
 export default function MainPage({navigation, route, login5, username, password}) {
   const carData = "ABC-123"
   const [allEvents, setAllEvents] = useState([]);
   const [logged, setLogged] = useState(false);
+  const [loggedUser, setLoggedUser] = useState("");
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-const auth = getAuth();
+  const auth = getAuth();
 
 
  const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
@@ -30,28 +31,29 @@ const auth = getAuth();
   .catch(error => {
     console.log(error)
   })
+  getData();
+  setEditButtonPressed(!editButtonPressed)
 } 
 
-const toFireBase = async (litres,mileage,price,wash ) => {      //Tämä lisää firebaseen 
-  //console.log("toFirebase")
+const toFireBase = async (litres,mileage,price,wash,userID ) => {      //Tämä lisää firebaseen 
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
     data: litres, mileage, price, wash, 
     created: serverTimestamp(),
+    user: userID,
   }).catch(error => console.log(error))
 }
+
 
 onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
       if (user) {
         const uid = user.uid;
-        console.log(uid)
+        setLoggedUser(uid);
       } else {
         console.log("Ei ole kirjautunut")
       }
     });  
 
-const editButton= () =>{            //tämä laittaa poista napit näkyviin
-      setEditButtonPressed(true);
-    }
+
 
 
 useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napin
@@ -62,34 +64,30 @@ useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napi
               name="edit"
               size={24}
               color="black"
-              onPress={ () => editButton()}           //navigation.navigate('Edit')}
+              onPress={ () => setEditButtonPressed(!editButtonPressed)}           //navigation.navigate('Edit')}
           />  
       ),  
   }) 
 }, [])  
 
-useEffect( () => {        //Tällä katsotaan kirjautunut käyttäjä??
-  if(route.params?.login5) {
-      setLogged(true)  
-      console.log("logged = ", route.params?.login5) 
-  }
-},[route.params?.login5])
-
-useEffect(() => {       //Tämä hakee datan firebasesta
-  if(route.params?.price) {
+useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
+  setLogged(true)      //tämä lisätty
+  if(route.params?.price) { // muoks oli pricve
       getData();
       const newLitres = {litres: route.params.litres};
       const newMileage = {mileage: route.params.mileage};
       const newPrice = {price: route.params.price};
       const newWash = {wash: route.params.wash};
-      toFireBase(newLitres, newMileage, newPrice, newWash);
+      const newUser = {user: route.params.userID}
+      toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
+      
   }
     getData();
 },[route.params?.price])
 
-const getData = async => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
-  const q = query(collection(firestore,ADDEVENT), orderBy('created','desc'))
-  const unsubscribe = onSnapshot(q,(querySnapshot) => {
+const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+   const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
+   const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
     querySnapshot.forEach((doc) => {
       const messageObject = {
@@ -98,14 +96,16 @@ const getData = async => {                                      //useEffect kuts
         mileage: doc.data().mileage.mileage,  
         price: doc.data().price.price, 
         wash: doc.data().wash.wash,
-        created: convertFirbaseTimeStampToJS(doc.data().created)
+        created: convertFirbaseTimeStampToJS(doc.data().created),
+        user: doc.data().user
       }
       tempMessages.push(messageObject)
     })  
     setAllEvents(tempMessages)
-  }) 
+  })  
   return () => {
     unsubscribe()
+    
   }
 }
 const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio
@@ -152,14 +152,17 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
           </View>
 
           <ScrollView>
+
               {
                 allEvents.map((id) => (
                   <View style={Styles.allEventsList} key={id.id}>
+
                     {id.mileage!= null && <Text style={Styles.listText}>{id.mileage}Km</Text>}
                     {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
                     {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
                     <Text style={Styles.listText}>{id.created}</Text>  
-                    {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id)}><Text style={Styles.textStyle}>Poista</Text>
+                    
+                      {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }><Text style={Styles.textStyle}>Poista</Text>
                     </Pressable> }
                   </View>
                                    
