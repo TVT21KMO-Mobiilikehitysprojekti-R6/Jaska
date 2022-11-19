@@ -21,7 +21,7 @@ export default function MainPage({navigation, route, login5, username, password}
   const [loggedUser, setLoggedUser] = useState("");
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-const auth = getAuth();
+  const auth = getAuth();
 
 
  const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
@@ -31,10 +31,11 @@ const auth = getAuth();
   .catch(error => {
     console.log(error)
   })
+  getData();
+  setEditButtonPressed(!editButtonPressed)
 } 
 
 const toFireBase = async (litres,mileage,price,wash,userID ) => {      //Tämä lisää firebaseen 
-  //console.log("toFirebase")
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
     data: litres, mileage, price, wash, 
     created: serverTimestamp(),
@@ -42,22 +43,17 @@ const toFireBase = async (litres,mileage,price,wash,userID ) => {      //Tämä 
   }).catch(error => console.log(error))
 }
 
-/* const getUserID = async () => { 
+
 onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
       if (user) {
         const uid = user.uid;
-        console.log(uid);
         setLoggedUser(uid);
       } else {
         console.log("Ei ole kirjautunut")
       }
     });  
-} */
 
 
-const editButton= () =>{            //tämä laittaa poista napit näkyviin
-      setEditButtonPressed(true);
-    }
 
 
 useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napin
@@ -68,54 +64,29 @@ useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napi
               name="edit"
               size={24}
               color="black"
-              onPress={ () => editButton()}           //navigation.navigate('Edit')}
+              onPress={ () => setEditButtonPressed(!editButtonPressed)}           //navigation.navigate('Edit')}
           />  
       ),  
   }) 
 }, [])  
 
-/* useEffect( () => {        //Tällä katsotaan kirjautunut käyttäjä?? tätä ei ehkä tarvii enään, koska tuo oikea tapa hakea kirjautunut käyttäjä on yllä
-  if(route.params?.login5) {
-      setLogged(true)  
-      console.log("logged = ", route.params?.login5) 
-  }
-},[route.params?.login5]) */
-
 useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
   setLogged(true)      //tämä lisätty
-  if(route.params?.userID) { // muoks oli pricve
-      //getUserID();
+  if(route.params?.price) { // muoks oli pricve
       getData();
       const newLitres = {litres: route.params.litres};
       const newMileage = {mileage: route.params.mileage};
       const newPrice = {price: route.params.price};
       const newWash = {wash: route.params.wash};
       const newUser = {user: route.params.userID}
-      console.log(newUser)
       toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
+      
   }
-  //getUserID();
     getData();
-},[route.params?.userID])// muoks oli price
+},[route.params?.price])
 
 const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
- console.log("looggden in getdata " + route.params?.login5)
-  const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
-  const querySnapshot = await getDocs(q); 
-  const tempMessages = [] 
-  querySnapshot.forEach((doc) => {
-    const messageObject = {
-      id: doc.id,                           //luetaan firebasesta automaattinen avain
-      litres: doc.data().data.litres, 
-      mileage: doc.data().mileage.mileage,  
-      price: doc.data().price.price, 
-      wash: doc.data().wash.wash,
-      created: convertFirbaseTimeStampToJS(doc.data().created),
-      user: doc.data().user
-    }
-    tempMessages.push(messageObject)
-  
-   /*const q = query(collection(firestore,ADDEVENT), orderBy('created','desc'))
+   const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
    const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
     querySnapshot.forEach((doc) => {
@@ -129,8 +100,9 @@ const getData = async() => {                                      //useEffect ku
         user: doc.data().user
       }
       tempMessages.push(messageObject)
-    })  */
+    })  
     setAllEvents(tempMessages)
+    console.log("allevents", allEvents)
   })  
   return () => {
     unsubscribe()
@@ -181,8 +153,9 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
           </View>
 
           <ScrollView>
-              {
-                allEvents.map((id) => (
+              
+                {console.log("alleventsi alhaalla", allEvents) }
+               { allEvents.map((id) => (
                   <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.id}>
                     <View style={Styles.allEventsList} >
 
@@ -190,7 +163,8 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                     {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
                     {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
                     <Text style={Styles.listText}>{id.created}</Text>  
-                    {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id)}><Text style={Styles.textStyle}>Poista</Text>
+                    
+                      {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }><Text style={Styles.textStyle}>Poista</Text>
                     </Pressable> }
                     </View>                  
                   </View>
