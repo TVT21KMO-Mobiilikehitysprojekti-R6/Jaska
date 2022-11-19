@@ -102,7 +102,6 @@ const getData = async() => {                                      //useEffect ku
       tempMessages.push(messageObject)
     })  
     setAllEvents(tempMessages)
-    console.log("allevents", allEvents)
   })  
   return () => {
     unsubscribe()
@@ -153,8 +152,6 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
           </View>
 
           <ScrollView>
-              
-                {console.log("alleventsi alhaalla", allEvents) }
                { allEvents.map((id) => (
                   <View style={{flexDirection: 'row', justifyContent: 'space-between', marginEnd: 10}} key={id.id}>
                     <View style={Styles.allEventsList} >
