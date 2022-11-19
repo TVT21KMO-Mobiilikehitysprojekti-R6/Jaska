@@ -4,6 +4,7 @@ import Styles from './Styles';
 import { Route } from '@react-navigation/native';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import { getAuth } from "firebase/auth";
 
 
 export default function AddNewEvent({route, navigation}) {
@@ -12,7 +13,17 @@ export default function AddNewEvent({route, navigation}) {
   const [mileage, onChangeMileage] = React.useState(null);
   const [price, onChangePrice] = React.useState(null);
   const [wash, onChangeWash] = React.useState(null);
+  const auth = getAuth();
+  const user = auth.currentUser;
 
+      if (user) {
+  // User is signed in, see docs for a list of available properties
+  // https://firebase.google.com/docs/reference/js/firebase.User
+  // ...
+  console.log("käyttäjä ADDEVENT SIVULLA" +user)
+        } else {
+  // No user is signed in. tähän joku errorihommeli
+      }
   var radio_props = [
     {label: 'Ulkopesu', value: 0 },
     {label: 'Sisäpesu', value: 1 }

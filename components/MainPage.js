@@ -2,24 +2,59 @@
 import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'react-native'
 import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'react'
 import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
-import {onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, getAuth, signInWithEmailAndPassword} from '../firebase/Config'
+import {firebase, onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
+import {getFirestore, doc, deleteDoc} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
+
+const db = getFirestore();         //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
 
 
-export default function MainPage({navigation, route, login5}) {
+export default function MainPage({navigation, route, login5, username, password}) {
   const carData = "ABC-123"
   const [allEvents, setAllEvents] = useState([]);
   const [logged, setLogged] = useState(false);
- 
-//setLogged(true);
-//console.log("logged = ", login2)
+  const [editButtonPressed, setEditButtonPressed] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+const auth = getAuth();
 
-//Tämä lisää stack navigaattoriin napin
-useLayoutEffect( () => {
+
+ const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
+    const docRef = doc(db, "ADDEVENT", id)
+  deleteDoc(docRef)
+  .then(() => {console.log("delete onnistui")})
+  .catch(error => {
+    console.log(error)
+  })
+} 
+
+const toFireBase = async (litres,mileage,price,wash ) => {      //Tämä lisää firebaseen 
+  //console.log("toFirebase")
+  const docRef = await addDoc(collection(firestore,ADDEVENT),{
+    data: litres, mileage, price, wash, 
+    created: serverTimestamp(),
+  }).catch(error => console.log(error))
+}
+
+onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
+      if (user) {
+        const uid = user.uid;
+        console.log(uid)
+      } else {
+        console.log("Ei ole kirjautunut")
+      }
+    });  
+
+const editButton= () =>{            //tämä laittaa poista napit näkyviin
+      setEditButtonPressed(true);
+    }
+
+
+useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napin
   navigation.setOptions({
       headerRight: () => (
           <Feather
@@ -27,20 +62,20 @@ useLayoutEffect( () => {
               name="edit"
               size={24}
               color="black"
-              onPress={ () => navigation.navigate('Edit')}
+              onPress={ () => editButton()}           //navigation.navigate('Edit')}
           />  
       ),  
   }) 
 }, [])  
 
-useEffect( () => {
+useEffect( () => {        //Tällä katsotaan kirjautunut käyttäjä??
   if(route.params?.login5) {
       setLogged(true)  
       console.log("logged = ", route.params?.login5) 
   }
 },[route.params?.login5])
 
-useEffect(() => {
+useEffect(() => {       //Tämä hakee datan firebasesta
   if(route.params?.price) {
       getData();
       const newLitres = {litres: route.params.litres};
@@ -52,20 +87,10 @@ useEffect(() => {
     getData();
 },[route.params?.price])
 
-const toFireBase = async (litres,mileage,price,wash ) => {
-  //console.log("toFirebase")
-  const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    data: litres, mileage, price, wash, 
-    created: serverTimestamp(),
-  }).catch(error => console.log(error))
-}
-
-  const getData = async => {
+const getData = async => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
   const q = query(collection(firestore,ADDEVENT), orderBy('created','desc'))
-
   const unsubscribe = onSnapshot(q,(querySnapshot) => {
-    const tempMessages = []
-    
+    const tempMessages = [] 
     querySnapshot.forEach((doc) => {
       const messageObject = {
         id: doc.id,                           //luetaan firebasesta automaattinen avain
@@ -83,19 +108,13 @@ const toFireBase = async (litres,mileage,price,wash ) => {
     unsubscribe()
   }
 }
-
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const newFuelerHandle = (event) => { 
+const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio
   setModalVisible(!modalVisible)
-  //const event = eventInput //otin pois jotta vähemmän muuttujia ja siistimpi kun tuodaan muuttuja event
   navigation.navigate('AddNewEvent', {testKey: event})
   }
 
-    
   if ( logged){
   return(
-    
     <View style={Styles.container}>
       <Text style={Styles.heading}> Tapahtumat {carData} </Text>
         <View style={Styles.ScrollView}>
@@ -142,8 +161,9 @@ const toFireBase = async (litres,mileage,price,wash ) => {
                     {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
                     {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
                     <Text style={Styles.listText}>{id.created}</Text>  
-                    
-                    </View>                   
+                    {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id)}><Text style={Styles.textStyle}>Poista</Text>
+                    </Pressable> }
+                    </View>                  
                   </View>
                   ))
               }
@@ -156,7 +176,6 @@ const toFireBase = async (litres,mileage,price,wash ) => {
   )
 }else {
   console.log("EI onnistu");
-  //navigation.navigate("LoginPage", {setLogin} ) 
 };
 } 
 
