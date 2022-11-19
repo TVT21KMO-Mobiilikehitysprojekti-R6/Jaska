@@ -9,14 +9,33 @@ export default  StyleSheet.create({
       alignItems: 'center',
       // justifyContent: 'center',
   },
+  heading: {  // yläpalkki sis.auto rekkari
+    width: '96%',
+    height: 25,
+    backgroundColor: '#008000',
+    marginTop:0,
+    marginBottom:10,
+    textAlign:'center',
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: 'white'
+  },
+  ScrollView: { // tausta johon tapahtuvat tulevat - iso nelio
+    flex: 1,
+    width: '96%',
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: '#008000',
+    padding:5,
+  },
     
   allEventsList: {
-    display: 'flex',
+    //display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     padding:10,
     marginTop:5,
     marginBottom:10,
-    width: '100%',
     justifyContent:'space-between',
     backgroundColor: '#ffffff',
     borderColor: '#000000',
@@ -29,14 +48,6 @@ export default  StyleSheet.create({
 listText:{ //teksti ruutujen tekstien välit
   display: 'flex',
   padding: 10,
-  
-},
-ScrollView: { // tausta johon tapahtuvat tulevat - iso nelio
-  height:600,
-  borderWidth: 2,
-  borderRadius5: 0,
-  borderColor: '#008000',
-  padding:5,
   
 },
 centeredView: { //tapahtumien asettelu
@@ -99,18 +110,5 @@ baitWindowText: { // asiakas syöttää tietoa kenttaan
   marginBottom: 5,
   backgroundColor: '#ffffff',
 },
-
-heading: {  // yläpalkki sis.auto rekkari
-      width: '96%',
-      height: 25,
-      backgroundColor: '#008000',
-      marginTop:0,
-      marginBottom:10,
-      textAlign:'center',
-      fontWeight: 'bold',
-      fontSize: 16,
-      color: 'white'
-
-}
   
 });
