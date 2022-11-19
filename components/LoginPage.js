@@ -1,23 +1,24 @@
 import { View, Text, SafeAreaView, Button, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Styles from './Styles';
-import {getAuth, auth, signInWithEmailAndPassword, onAuthStateChanged} from "../firebase/Config.js";
+import { createUser, auth, signInWithEmailAndPassword, onAuthStateChanged} from "../firebase/Config.js";
 import MainPage from './MainPage';
-
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginPage({navigation, setLogin}) {
 
-  const [username, setUserName] = useState('mokko@testi.fi'); // anna joku sposti
+  const [email, setEmail] = useState('mokko@testi.fi'); // anna joku sposti
   const [password, setPassword] = useState('testi123'); // anna joku salasana
   const [phoneNumber, setPhoneNumber] = useState(''); // anna joku numero
   const [displayName, setDisplayName] =  useState(''); // anna joku nimi
+  const [userCreated, setUserCreated] = useState(0); //kun käyttäjä luodaan, tulostetaan teksti
 
   const [login2, setLogin2] = useState(false);
   const [userID, setUserID] = useState('');
 
   const login = () => {
       const auth = getAuth()
-      signInWithEmailAndPassword(auth,username,password)
+      signInWithEmailAndPassword(auth,email,password)
       .then((userCredential) => {
         //console.log("loginfunktiuon ser "+ userCredential.user.uid)
         setLogin2(true)
@@ -34,27 +35,28 @@ export default function LoginPage({navigation, setLogin}) {
         }
       })
     } 
-
+    
+useEffect(  () => { 
+  setUserCreated(0)
+},[])
+    
     
 
-const createUser = (username, password) => {
-    getAuth()
-    .createUser({
-      email: 'user@example.com',
-      emailVerified: false,
-      phoneNumber: '+11234567890',
-      password: 'secretPassword',
-      displayName: 'John Doe',
-      photoURL: 'http://www.example.com/12345678/photo.png',
-      disabled: false,
-    })
-    .then((userRecord) => {
-      // See the UserRecord reference doc for the contents of userRecord.
-      console.log('Successfully created new user:', userRecord.uid);
-    })
-    .catch((error) => {
-      console.log('Error creating new user:', error);
-    });
+const createUser = (email, password) => {                 //TÄmä toimii, lisääö käyttäjän databaeen
+    const auth = getAuth()
+    createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    const user = userCredential.user;
+    setEmail();
+    setPassword();
+    setUserCreated(1)
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ..
+  });
+
   }
 
   return (
@@ -63,14 +65,14 @@ const createUser = (username, password) => {
         <View style={Styles.input}>
           <TextInput  
             sstyle={{flex: 0.75}}
-            //onChangeText={text => setUserName(text)}
-            value={username}
+            onChangeText={text => setEmail(text)}
+            value={email}
             keyboardType='email-address'
             placeholder="Give your name to login..."       
             />
             <TextInput  
             sstyle={{flex: 0.75}}
-            //onChangeText={text => setPassword(text)}
+            onChangeText={text => setPassword(text)}
             value={password}
             placeholder="Give your pasword to login..."       
             />
@@ -82,42 +84,42 @@ const createUser = (username, password) => {
             color="#841584"
             />
         </View>
-      {/* <Text style={Styles.heading}> Create user</Text>
+       <Text style={Styles.heading}> Create user</Text>
       <View style={Styles.input}>
           <TextInput  
             sstyle={{flex: 0.75}}
-            //onChangeText={text => setUserName(text)}
-            value={username}
+            onChangeText={text => setEmail(text)}
+            value={email}
             keyboardType='email-address'
             placeholder="Give your name to login..."       
             />
             <TextInput  
             sstyle={{flex: 0.75}}
-            //onChangeText={text => setPassword(text)}
+            onChangeText={text => setPassword(text)}
             value={password}
             placeholder="Give your pasword to login..."       
             />
             <TextInput  
             sstyle={{flex: 0.75}}
-            //onChangeText={text => setUserName(text)}
+            onChangeText={text => setPhoneNumber(text)}
             value={phoneNumber}
             keyboardType='Puhelinnumero'
             placeholder="Give your puhelinnumer to login..."       
             />
             <TextInput  
             sstyle={{flex: 0.75}}
-            //onChangeText={text => setUserName(text)}
+            onChangeText={text => setDisplayName(text)}
             value={displayName}
             keyboardType='email-address'
             placeholder="Give your name to login..."       
             />
             <Button style={Styles.buttonLogIn} 
             title="Submit" 
-            onPress={ ()=> createUser(username, password, phoneNumber, displayName)}
+            onPress={ ()=> createUser(email, password, phoneNumber, displayName)}
             color="#841584"
             />
-          </View> */}
-
+          </View> 
+          {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
 
     </View>
 
