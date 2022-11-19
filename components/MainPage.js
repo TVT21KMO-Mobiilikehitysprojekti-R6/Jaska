@@ -33,16 +33,16 @@ const auth = getAuth();
   })
 } 
 
-const toFireBase = async (litres,mileage,price,wash ) => {      //Tämä lisää firebaseen 
+const toFireBase = async (litres,mileage,price,wash,userID ) => {      //Tämä lisää firebaseen 
   //console.log("toFirebase")
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
     data: litres, mileage, price, wash, 
     created: serverTimestamp(),
-    user: loggedUser,
+    user: userID,
   }).catch(error => console.log(error))
 }
 
-const getUserID = async () => { 
+/* const getUserID = async () => { 
 onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
       if (user) {
         const uid = user.uid;
@@ -52,7 +52,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
         console.log("Ei ole kirjautunut")
       }
     });  
-}
+} */
 
 
 const editButton= () =>{            //tämä laittaa poista napit näkyviin
@@ -74,33 +74,48 @@ useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napi
   }) 
 }, [])  
 
-useEffect( () => {        //Tällä katsotaan kirjautunut käyttäjä?? tätä ei ehkä tarvii enään, koska tuo oikea tapa hakea kirjautunut käyttäjä on yllä
+/* useEffect( () => {        //Tällä katsotaan kirjautunut käyttäjä?? tätä ei ehkä tarvii enään, koska tuo oikea tapa hakea kirjautunut käyttäjä on yllä
   if(route.params?.login5) {
       setLogged(true)  
       console.log("logged = ", route.params?.login5) 
   }
-},[route.params?.login5])
+},[route.params?.login5]) */
 
-useEffect(() => {       //Tämä hakee datan firebasesta
-  if(route.params?.price) {
-      getUserID();
+useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
+  setLogged(true)      //tämä lisätty
+  if(route.params?.userID) { // muoks oli pricve
+      //getUserID();
       getData();
       const newLitres = {litres: route.params.litres};
       const newMileage = {mileage: route.params.mileage};
       const newPrice = {price: route.params.price};
       const newWash = {wash: route.params.wash};
-      const newUser = {user: loggedUser}
+      const newUser = {user: route.params.userID}
       toFireBase(newLitres, newMileage, newPrice, newWash, newUser);
   }
-  getUserID();
+  //getUserID();
     getData();
-},[route.params?.price])
+},[route.params?.userID])// muoks oli price
 
-const getData = async(login5) => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
- console.log("looggden in getdata " + loggedUser)
-  const q = query(collection(firestore,ADDEVENT), where("user", "==", "8Dk0fL8VpAfKlgc8eMpYAZH2Ntw1"), orderBy('created','desc'))
- 
-  const unsubscribe = onSnapshot(q,(querySnapshot) => {
+const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+ console.log("looggden in getdata " + route.params?.login5)
+  const q = query(collection(firestore,ADDEVENT), where("litres", "==", "1"/* route.params?.login5 */), orderBy('created','desc'))
+  const querySnapshot = await getDocs(q);
+  console.log(querySnapshot) 
+  querySnapshot.forEach((doc) => {
+    const messageObject = {
+      id: doc.id,                           //luetaan firebasesta automaattinen avain
+      litres: doc.data().data.litres, 
+      mileage: doc.data().mileage.mileage,  
+      price: doc.data().price.price, 
+      wash: doc.data().wash.wash,
+      created: convertFirbaseTimeStampToJS(doc.data().created),
+      user: doc.data().user
+    }
+    tempMessages.push(messageObject)
+  
+   /*const q = query(collection(firestore,ADDEVENT), orderBy('created','desc'))
+   const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
     querySnapshot.forEach((doc) => {
       const messageObject = {
@@ -113,11 +128,12 @@ const getData = async(login5) => {                                      //useEff
         user: doc.data().user
       }
       tempMessages.push(messageObject)
-    })  
+    })  */
     setAllEvents(tempMessages)
-  }) 
+  })  
   return () => {
     unsubscribe()
+    
   }
 }
 const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio

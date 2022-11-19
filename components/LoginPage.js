@@ -19,9 +19,9 @@ export default function LoginPage({navigation, setLogin}) {
       const auth = getAuth()
       signInWithEmailAndPassword(auth,username,password)
       .then((userCredential) => {
-        //console.log(userCredential.user)
+        //console.log("loginfunktiuon ser "+ userCredential.user.uid)
         setLogin2(true)
-        navigation.navigate("MainPage", {login5: username})
+        navigation.navigate("MainPage", {login5: userCredential.user.uid})
         
       }).catch((error) => {
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {

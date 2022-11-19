@@ -12,6 +12,7 @@ export default function AddNewEvent({route, navigation}) {
   const [mileage, onChangeMileage] = useState(null);
   const [price, onChangePrice] = useState(null);
   const [wash, onChangeWash] = useState(0);
+  const [userID, setUserID] = useState(null);
   const auth = getAuth();
   const user = auth.currentUser;
   var radio_props = [
@@ -22,6 +23,7 @@ export default function AddNewEvent({route, navigation}) {
   onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
     if (user) {
       const uid = user.uid;
+      setUserID(user.uid);
       console.log("käyttäjä ADDEVENT SIVULLA " +uid)
     } else {
       console.log("Ei ole kirjautunut")
@@ -34,7 +36,7 @@ export default function AddNewEvent({route, navigation}) {
         alert('Something went wrong!!')
         console.log("tyhjä lisäys kenttä")
     } if (event === 'fuel') {
-        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash})
+        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID})
     } if (event === 'wash') {
       navigation.navigate('MainPage', {wash: wash, price: price, litres: litres, mileage: mileage})
   }   
