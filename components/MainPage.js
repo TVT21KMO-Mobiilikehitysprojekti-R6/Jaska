@@ -9,15 +9,16 @@ import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
-import {getFirestore, doc, deleteDoc} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
+import {getFirestore, doc, deleteDoc, getDocs, where} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
 
-const db = getFirestore();         //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
+const db = getFirestore();         //tämä piti olla ehkä tässä muuten meni delete vituiksi, siirto omalla vastuulla ehkä
 
 
 export default function MainPage({navigation, route, login5, username, password}) {
   const carData = "ABC-123"
   const [allEvents, setAllEvents] = useState([]);
   const [logged, setLogged] = useState(false);
+  const [loggedUser, setLoggedUser] = useState("");
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 const auth = getAuth();
@@ -37,17 +38,22 @@ const toFireBase = async (litres,mileage,price,wash ) => {      //Tämä lisää
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
     data: litres, mileage, price, wash, 
     created: serverTimestamp(),
+    user: loggedUser,
   }).catch(error => console.log(error))
 }
 
+const getUserID = async () => { 
 onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
       if (user) {
         const uid = user.uid;
-        console.log(uid)
+        console.log(uid);
+        setLoggedUser(uid);
       } else {
         console.log("Ei ole kirjautunut")
       }
     });  
+}
+
 
 const editButton= () =>{            //tämä laittaa poista napit näkyviin
       setEditButtonPressed(true);
@@ -68,7 +74,7 @@ useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napi
   }) 
 }, [])  
 
-useEffect( () => {        //Tällä katsotaan kirjautunut käyttäjä??
+useEffect( () => {        //Tällä katsotaan kirjautunut käyttäjä?? tätä ei ehkä tarvii enään, koska tuo oikea tapa hakea kirjautunut käyttäjä on yllä
   if(route.params?.login5) {
       setLogged(true)  
       console.log("logged = ", route.params?.login5) 
@@ -77,18 +83,23 @@ useEffect( () => {        //Tällä katsotaan kirjautunut käyttäjä??
 
 useEffect(() => {       //Tämä hakee datan firebasesta
   if(route.params?.price) {
+      getUserID();
       getData();
       const newLitres = {litres: route.params.litres};
       const newMileage = {mileage: route.params.mileage};
       const newPrice = {price: route.params.price};
       const newWash = {wash: route.params.wash};
-      toFireBase(newLitres, newMileage, newPrice, newWash);
+      const newUser = {user: loggedUser}
+      toFireBase(newLitres, newMileage, newPrice, newWash, newUser);
   }
+  getUserID();
     getData();
 },[route.params?.price])
 
-const getData = async => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
-  const q = query(collection(firestore,ADDEVENT), orderBy('created','desc'))
+const getData = async(login5) => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+ console.log("looggden in getdata " + loggedUser)
+  const q = query(collection(firestore,ADDEVENT), where("user", "==", "8Dk0fL8VpAfKlgc8eMpYAZH2Ntw1"), orderBy('created','desc'))
+ 
   const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
     querySnapshot.forEach((doc) => {
@@ -98,7 +109,8 @@ const getData = async => {                                      //useEffect kuts
         mileage: doc.data().mileage.mileage,  
         price: doc.data().price.price, 
         wash: doc.data().wash.wash,
-        created: convertFirbaseTimeStampToJS(doc.data().created)
+        created: convertFirbaseTimeStampToJS(doc.data().created),
+        user: doc.data().user
       }
       tempMessages.push(messageObject)
     })  
