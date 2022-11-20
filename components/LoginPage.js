@@ -1,9 +1,11 @@
 import { View, Text, SafeAreaView, Button, TextInput } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import Styles from './Styles';
-import { createUser, auth, signInWithEmailAndPassword, onAuthStateChanged} from "../firebase/Config.js";
 import MainPage from './MainPage';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { toFireBase } from '../Helpers/toFireBase';
+import {firebase, onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
+
 
 export default function LoginPage({navigation, setLogin}) {
 
@@ -12,6 +14,7 @@ export default function LoginPage({navigation, setLogin}) {
   const [phoneNumber, setPhoneNumber] = useState(''); // anna joku numero
   const [displayName, setDisplayName] =  useState(''); // anna joku nimi
   const [userCreated, setUserCreated] = useState(0); //kun käyttäjä luodaan, tulostetaan teksti
+  const [carPlate, setCarPlate] = useState(''); 
 
   const [login2, setLogin2] = useState(false);
   const [userID, setUserID] = useState('');
@@ -42,7 +45,7 @@ useEffect(  () => {
     
     
 
-const createUser = (email, password) => {                 //TÄmä toimii, lisääö käyttäjän databaeen
+const createUser = (email, password, carPlate) => {                 //TÄmä toimii, lisääö käyttäjän databaeen
     const auth = getAuth()
     createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
@@ -50,13 +53,14 @@ const createUser = (email, password) => {                 //TÄmä toimii, lisä
     setEmail();
     setPassword();
     setUserCreated(1)
+    displayName(carPlate)
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
     // ..
   });
-
+   // toFireBase(carPlate)
   }
 
   return (
@@ -113,11 +117,23 @@ const createUser = (email, password) => {                 //TÄmä toimii, lisä
             keyboardType='email-address'
             placeholder="Give your name to login..."       
             />
+            <TextInput  
+            sstyle={{flex: 0.75}}
+            onChangeText={text => setCarPlate(text)}
+            value={carPlate}
+            keyboardType='text'
+            placeholder="Anna auton tunniste"       
+            />
             <Button style={Styles.buttonLogIn} 
             title="Submit" 
             onPress={ ()=> createUser(email, password, phoneNumber, displayName)}
             color="#841584"
             />
+      {/*       <Button style={Styles.buttonLogIn} 
+            title="testi" 
+            onPress={ ()=> toFireBase(carPlate)}
+            color="#841584"
+            /> */}
           </View> 
           {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
 

@@ -2,6 +2,7 @@
 import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'react-native'
 import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'react'
 import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
+import { toFireBase } from '../Helpers/toFireBase';
 import {firebase, onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Styles from './Styles';
