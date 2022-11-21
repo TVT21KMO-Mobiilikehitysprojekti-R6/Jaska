@@ -4,7 +4,7 @@ import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'reac
 import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
 import { toFireBase } from '../Helpers/toFireBase';
 import {firebase, onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, updateProfile  } from "firebase/auth";
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
@@ -12,17 +12,19 @@ import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
 import {getFirestore, doc, deleteDoc, getDocs, where} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
 
+
 const db = getFirestore();         //tämä piti olla ehkä tässä muuten meni delete vituiksi, siirto omalla vastuulla ehkä
 
 
 export default function MainPage({navigation, route, login5, username, password}) {
-  const carData = "ABC-123"
+  const [carData, setCarData] = useState("ABC-123");
   const [allEvents, setAllEvents] = useState([]);
   const [logged, setLogged] = useState(false);
   const [loggedUser, setLoggedUser] = useState("");
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
+  const [displayName, setDisplayName] = useState('');
 
 
  const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
@@ -49,6 +51,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
       if (user) {
         const uid = user.uid;
         setLoggedUser(uid);
+        setCarData(user.displayName)
       } else {
         console.log("Ei ole kirjautunut")
       }
@@ -86,7 +89,8 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
     getData();
 },[route.params?.price])
 
-const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+const getData = async() => {         
+  console.log("tähän carplate", route.params?.carPlate)                             //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
    const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
    const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
@@ -114,9 +118,36 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   navigation.navigate('AddNewEvent', {testKey: event})
   }
 
+
+const updateUser = () => {
+ // console.log(loggedUser)
+ const auth = getAuth()
+ console.log(auth)
+  /* updateProfile(auth.loggedUser, {
+      displayName: "Mokkotesti"
+   }).then(()=> {
+    console.log("Muokattu?", loggedUser)
+   }) */
+
+}
+
+
+
   if ( logged){
   return(
     <View style={Styles.container}>
+      <TextInput  
+            sstyle={{flex: 0.75}}
+            onChangeText={text => setDisplayName(text)}
+            value={displayName}
+            keyboardType='email-address'
+            placeholder="Tähän rekisterinumero"       
+            />
+             <Button style={Styles.buttonLogIn} 
+            title="Submit" 
+            onPress={ ()=> updateUser(displayName)}
+            color="#841584"
+            />
       <Text style={Styles.heading}> Tapahtumat {carData} </Text>
         <View style={Styles.ScrollView}>
           <View style={Styles.centeredView}>
