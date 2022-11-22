@@ -14,7 +14,6 @@ export default function LoginPage({navigation, setLogin}) {
   const [phoneNumber, setPhoneNumber] = useState(''); // anna joku numero
   const [displayName, setDisplayName] =  useState(''); // anna joku nimi
   const [userCreated, setUserCreated] = useState(0); //kun käyttäjä luodaan, tulostetaan teksti
-  //const [carPlate, setCarPlate] = useState(''); 
 
   const [login2, setLogin2] = useState(false);
   const [userID, setUserID] = useState('');
@@ -23,10 +22,9 @@ export default function LoginPage({navigation, setLogin}) {
       const auth = getAuth()
       signInWithEmailAndPassword(auth,email,password)
       .then((userCredential) => {
-        //console.log("loginfunktiuon ser "+ userCredential.user.uid)
         setLogin2(true)
         console.log("testiä loginsivun loginfunktiossa", userCredential)
-        //navigation.navigate("MainPage", {login5: userCredential.user.uid}, {carPlate: userCredential.user.displayName})
+        navigation.navigate("MainPage", {login5: userCredential.user.uid}, {carPlate: userCredential.user.displayName})
         
       }).catch((error) => {
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
@@ -54,55 +52,29 @@ signOut(auth).then(() => {
 }    
 
 const createUser = (email, password, displayName) => {                 //TÄmä toimii, lisääö käyttäjän databaeen
-  console.log("testiä loginsivun createuser", displayName)
-  
-  /* getAuth()
-  .createUser({
-    email: email,
-    emailVerified: false,
-    password: password,
-    displayName: displayName,
-    disabled: false,
-  })
-  .then((userRecord) => {
-    // See the UserRecord reference doc for the contents of userRecord.
-    console.log('Successfully created new user:', userRecord.uid);
-  })
-  .catch((error) => {
-    console.log('Error creating new user:', error);
-  }); */
-
 
    const auth = getAuth()
     createUserWithEmailAndPassword(auth, email, password, displayName)
   .then((userCredential) => {
     const user = userCredential.user;
+    updateUserProfile();
     //setEmail();
-    //setPassword();
+    setPassword();
     setUserCreated(1)
-    //setDisplayName()
-    //user.updateProfile({
-   //   displayName: "Mokkotesti3"
-   // })
-   // updateUserProfile(displayName)
+    setDisplayName(displayName)
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    // ..
   });
-   // toFireBase(carPlate) 
   }
 
-const updateUserProfile = (displayName) => {
+const updateUserProfile = () => {
   const auth = getAuth()
-   console.log("Vittu mitä paskaa", auth)
-    updateProfile(auth.userCredential, {
+    updateProfile(auth.currentUser, {
         displayName: displayName,
      }).then(()=> {
-      console.log("Muokattu11111?", userCredential)
      })
-     console.log("Vittu mitä paskaa2", auth)
 }
   return (
     <View style={Styles.container}>
@@ -128,11 +100,7 @@ const updateUserProfile = (displayName) => {
             onPress={login}
             color="#841584"
             />
-            <Button style={Styles.buttonLogIn} 
-            title="updatenappi" 
-            onPress={()=>updateUserProfile('5')}
-            color="#841584"
-            />
+            
         </View>
        <Text style={Styles.heading}> Create user</Text>
       <View style={Styles.input}>
@@ -149,13 +117,7 @@ const updateUserProfile = (displayName) => {
             value={password}
             placeholder="Give your pasword to login..."       
             />
-            {/* <TextInput  
-            sstyle={{flex: 0.75}}
-            onChangeText={text => setPhoneNumber(text)}
-            value={phoneNumber}
-            keyboardType='Puhelinnumero'
-            placeholder="Give your puhelinnumer to login..."       
-            /> */}
+            
             <TextInput  
             sstyle={{flex: 0.75}}
             onChangeText={text => setDisplayName(text)}
@@ -164,13 +126,7 @@ const updateUserProfile = (displayName) => {
             placeholder="Tähän rekisterinumero"       
             />
             
-          {/*   <TextInput  
-            sstyle={{flex: 0.75}}
-            onChangeText={text => setCarPlate(text)}
-            value={carPlate}
-            keyboardType='text'
-            placeholder="Anna auton tunniste"       
-            /> */}
+        
             <Button style={Styles.buttonLogIn} 
             title="Submit" 
             onPress={ ()=> createUser(email, password, displayName)}
