@@ -1,8 +1,8 @@
-import { View, Text, SafeAreaView, Button, TextInput } from 'react-native'
+import { View, Text, SafeAreaView, Button, TextInput, Modal, Pressable } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import Styles from './Styles';
 import MainPage from './MainPage';
-import { getAuth, createUserWithEmailAndPassword, signOut, createUser, updateProfile  } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signOut, createUser, updateProfile, onAuthStateChanged  } from "firebase/auth";
 import { toFireBase } from '../Helpers/toFireBase';
 import {firebase, onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
 
@@ -14,9 +14,19 @@ export default function LoginPage({navigation, setLogin}) {
   const [phoneNumber, setPhoneNumber] = useState(''); // anna joku numero
   const [displayName, setDisplayName] =  useState(''); // anna joku nimi
   const [userCreated, setUserCreated] = useState(0); //kun käyttäjä luodaan, tulostetaan teksti
-
+  const [modalCreateUser, setModalCreateUser]= useState(false); //
+  const [modalCarData, setModalCarData]= useState(false); //]
+  const [carMake, setCarMake]= useState(''); //
+  const [carModel, setCarModel]= useState(''); //
+  const [carColor, setCarColor]= useState(''); //
+  const [carMileage, setCarMileage]= useState(0); //
+  const [loggedUser, setLoggedUser]= useState(''); //
+  const [carPlate, setCarPlate]= useState(''); //
+  
   const [login2, setLogin2] = useState(false);
   const [userID, setUserID] = useState('');
+  const nakki=getAuth();
+  //console.log(nakki)
 
   const login = () => {
       const auth = getAuth()
@@ -51,17 +61,32 @@ signOut(auth).then(() => {
 });
 }    
 
+ const auth = getAuth();
+onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
+  if (user) {
+    const uid = user.uid;
+    setLoggedUser(uid);
+    setCarPlate(user.displayName)
+  } else {
+    console.log("Ei ole kirjautunut")
+  }
+});   
+
+
 const createUser = (email, password, displayName) => {                 //TÄmä toimii, lisääö käyttäjän databaeen
 
    const auth = getAuth()
     createUserWithEmailAndPassword(auth, email, password, displayName)
   .then((userCredential) => {
     const user = userCredential.user;
+    setCarPlate(userCredential.displayName)
     updateUserProfile();
     //setEmail();
     setPassword();
     setUserCreated(1)
     setDisplayName(displayName)
+    setModalCreateUser(false)
+    setModalCarData(true)
   })
   .catch((error) => {
     const errorCode = error.code;
@@ -76,10 +101,134 @@ const updateUserProfile = () => {
      }).then(()=> {
      })
 }
+const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio
+  setModalCreateUser(!modalCreateUser)
+  //navigation.navigate('AddNewEvent', {testKey: event})
+  }
+
   return (
     <View style={Styles.container}>
       <Text style={Styles.heading}> Hey please login</Text>
+
+
         <View style={Styles.input}>
+        <View style={Styles.centeredView}>                    
+            <Modal                                                  
+              animationType="slide"
+              transparent={true}
+              visible={modalCreateUser}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalCreateUser(!modalCreateUser);
+              }}>
+              <View style={Styles.centeredView}>
+                <View style={Styles.modalView}>
+                <Text style={Styles.heading}> Create user</Text>
+      <View style={Styles.input}>
+          <TextInput  
+            sstyle={{flex: 0.75}}
+            onChangeText={text => setEmail(text)}
+            value={email}
+            keyboardType='email-address'
+            placeholder="Give your name to login..."       
+            />
+            <TextInput  
+            sstyle={{flex: 0.75}}
+            onChangeText={text => setPassword(text)}
+            value={password}
+            placeholder="Give your pasword to login..."       
+            />
+            <TextInput  
+            sstyle={{flex: 0.75}}
+            onChangeText={text => setDisplayName(text)}
+            value={displayName}
+            keyboardType='email-address'
+            placeholder="Tähän rekisterinumero"       
+            />
+            <Button style={Styles.buttonLogIn} 
+            title="Submit" 
+            onPress={ ()=> createUser(email, password, displayName)}
+            color="#841584"
+            />
+         {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
+          </View>     
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => setModalCreateUser(!modalCreateUser)}>
+                    <Text style={Styles.textStyle}>Peruuta</Text>  
+                  </Pressable>
+                </View>
+              </View>
+            </Modal>
+          </View>
+
+
+                                                  {/* Tästä lähtee modalCarData  */}
+
+                                                  
+      <View style={Styles.centeredView}>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalCarData}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalCarData(!modalCarData);
+              }}>
+              <View style={Styles.centeredView}>
+                <View style={Styles.modalView}>
+                  
+                <Text style={Styles.heading}> Auton tietojen automaattinen haku epäonnistui, Anna auton tiedot</Text>
+      <View style={Styles.input}>
+          <TextInput  
+            sstyle={{flex: 0.75}}
+            onChangeText={text => setCarMake(text)}
+            value={carMake}
+            placeholder="Auton merkki"       
+            />
+            <TextInput  
+            sstyle={{flex: 0.75}}
+            onChangeText={text => setCarModel(text)}
+            value={carModel}
+            placeholder="Anna malli"       
+            />
+            <TextInput  
+            sstyle={{flex: 0.75}}
+            onChangeText={text => setCarMileage(text)}
+            value={carMileage}
+            placeholder="Tähän kilometrit"       
+            />
+            <Button style={Styles.buttonLogIn} 
+            title="Luo auto" 
+            onPress={ ()=> toFireBase({carMake, carModel, carMileage})}
+            color="#841584"
+            />
+            {console.log( "rivi 200" ,  loggedUser)}
+         {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
+          <Text style={Styles.heading}>{carPlate}</Text>
+          </View>     
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => setModalCreateUser(!modalCreateUser)}>
+                    <Text style={Styles.textStyle}>Peruuta</Text>  
+                  </Pressable>
+                </View>
+              </View>
+            </Modal>
+          </View>
+
+
+
+
+
+
+
+
+
+
+
+
+
           <TextInput  
             sstyle={{flex: 0.75}}
             onChangeText={text => setEmail(text)}
@@ -102,43 +251,9 @@ const updateUserProfile = () => {
             />
             
         </View>
-       <Text style={Styles.heading}> Create user</Text>
-      <View style={Styles.input}>
-          <TextInput  
-            sstyle={{flex: 0.75}}
-            onChangeText={text => setEmail(text)}
-            value={email}
-            keyboardType='email-address'
-            placeholder="Give your name to login..."       
-            />
-            <TextInput  
-            sstyle={{flex: 0.75}}
-            onChangeText={text => setPassword(text)}
-            value={password}
-            placeholder="Give your pasword to login..."       
-            />
-            
-            <TextInput  
-            sstyle={{flex: 0.75}}
-            onChangeText={text => setDisplayName(text)}
-            value={displayName}
-            keyboardType='email-address'
-            placeholder="Tähän rekisterinumero"       
-            />
-            
-        
-            <Button style={Styles.buttonLogIn} 
-            title="Submit" 
-            onPress={ ()=> createUser(email, password, displayName)}
-            color="#841584"
-            />
-           {/*  <Button style={Styles.buttonLogIn} 
-            title="signout" 
-            onPress={ ()=> signOut()}
-            color="#841584"
-            />  */}
-          </View> 
-          {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
+       
+          
+          <Pressable style={Styles.button}  onPress={() => setModalCreateUser(true)}><Text style={Styles.buttonText}>Tee käyttäjätunnus</Text></Pressable>
 
     </View>
 
