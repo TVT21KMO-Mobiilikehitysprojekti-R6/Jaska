@@ -24,7 +24,7 @@ export default function MainPage({navigation, route, login5, username, password}
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
-  const [displayName, setDisplayName] = useState('');
+  //const [displayName, setDisplayName] = useState('');
 
 
  const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
@@ -59,7 +59,6 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
 
 
 
-
 useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napin
   navigation.setOptions({
       headerRight: () => (
@@ -72,7 +71,7 @@ useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napi
           />  
       ),  
   }) 
-}, [])  
+}, [editButtonPressed])  
 
 useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
   setLogged(true)      //tämä lisätty
@@ -123,8 +122,9 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   if ( logged){
   return(
     <View style={Styles.container}>
-{/*                             {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }><Text style={Styles.textStyle}>Poista</Text>
- */}
+                             {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => navigation.navigate('editCar', {carData: carData}) }><Text style={Styles.textStyle}>Muokkaa autoa</Text>
+ </Pressable>}
+    
       <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
       
         <View style={Styles.ScrollView}>
@@ -174,6 +174,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                     
                       {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }><Text style={Styles.textStyle}>Poista</Text>
                     </Pressable> }
+
                   </View>
                                    
                   ))
@@ -182,6 +183,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
               
         </View>
 <Pressable style={Styles.button}  onPress={() => setModalVisible(true)}><Text style={Styles.buttonText}>Lisää tapahtuma</Text></Pressable>
+
     </View>
 
   )

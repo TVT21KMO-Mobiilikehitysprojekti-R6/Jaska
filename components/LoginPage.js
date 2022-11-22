@@ -23,7 +23,7 @@ export default function LoginPage({navigation, setLogin}) {
       signInWithEmailAndPassword(auth,email,password)
       .then((userCredential) => {
         setLogin2(true)
-        console.log("testiä loginsivun loginfunktiossa", userCredential)
+        //console.log("testiä loginsivun loginfunktiossa", userCredential)
         navigation.navigate("MainPage", {login5: userCredential.user.uid}, {carPlate: userCredential.user.displayName})
         
       }).catch((error) => {
