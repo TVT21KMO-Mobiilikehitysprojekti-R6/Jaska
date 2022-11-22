@@ -89,8 +89,7 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
     getData();
 },[route.params?.price])
 
-const getData = async() => {         
-  console.log("tähän carplate", route.params?.carPlate)                             //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
    const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
    const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
@@ -119,36 +118,15 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   }
 
 
-const updateUser = () => {
- // console.log(loggedUser)
- const auth = getAuth()
- console.log(auth)
-  /* updateProfile(auth.loggedUser, {
-      displayName: "Mokkotesti"
-   }).then(()=> {
-    console.log("Muokattu?", loggedUser)
-   }) */
-
-}
-
 
 
   if ( logged){
   return(
     <View style={Styles.container}>
-      <TextInput  
-            sstyle={{flex: 0.75}}
-            onChangeText={text => setDisplayName(text)}
-            value={displayName}
-            keyboardType='email-address'
-            placeholder="Tähän rekisterinumero"       
-            />
-             <Button style={Styles.buttonLogIn} 
-            title="Submit" 
-            onPress={ ()=> updateUser(displayName)}
-            color="#841584"
-            />
-      <Text style={Styles.heading}> Tapahtumat {carData} </Text>
+{/*                             {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }><Text style={Styles.textStyle}>Poista</Text>
+ */}
+      <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
+      
         <View style={Styles.ScrollView}>
           <View style={Styles.centeredView}>
             <Modal
