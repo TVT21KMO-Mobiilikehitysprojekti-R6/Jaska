@@ -52,7 +52,7 @@ useEffect(  () => {
   setUserCreated(0)
 },[])
     
-const signOut = () => {
+const signOut = () => {           //Tämä kirjkaa käyttäjän ulos, tarkista toiminta
   const auth = getAuth();
 signOut(auth).then(() => {
   console.log("Sign-out successful")
@@ -79,7 +79,7 @@ const createUser = (email, password, displayName) => {                 //TÄmä 
     createUserWithEmailAndPassword(auth, email, password, displayName)
   .then((userCredential) => {
     const user = userCredential.user;
-    setCarPlate(userCredential.displayName)
+    setCarPlate(userCredential.displayName)     //tätä ei ehkä tarvitse enää
     updateUserProfile();
     //setEmail();
     setPassword();
@@ -200,16 +200,16 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
             />
             <Button style={Styles.buttonLogIn} 
             title="Luo auto" 
-            onPress={ ()=> toFireBase({carMake, carModel, carMileage})}
+            onPress={ ()=> toFireBase({carMake, carModel, carMileage, loggedUser})}
             color="#841584"
             />
             {console.log( "rivi 200" ,  loggedUser)}
          {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
-          <Text style={Styles.heading}>{carPlate}</Text>
+          <Text style={Styles.heading}>{displayName}</Text>
           </View>     
                   <Pressable
                     style={[Styles.button, Styles.button]}
-                    onPress={() => setModalCreateUser(!modalCreateUser)}>
+                    onPress={() => setModalCarData(!modalCarData)}>
                     <Text style={Styles.textStyle}>Peruuta</Text>  
                   </Pressable>
                 </View>
