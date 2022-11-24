@@ -26,6 +26,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const firestore = getFirestore();
 const ADDEVENT = 'ADDEVENT';
+const initialCarData = 'initialCarData';
 export {
   firestore, 
   collection,
@@ -33,6 +34,7 @@ export {
   serverTimestamp,
   orderBy,
   ADDEVENT,
+  initialCarData,
   query,
   onSnapshot,
   getAuth,
