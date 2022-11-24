@@ -7,7 +7,7 @@ import MainPage from './components/MainPage';
 import StartPage from './components/StartPage';
 import AddNewEvent from './components/AddNewEvent';
 import { firestone } from './firebase/Config'
-import editCar from './components/editCar';
+import editCar from './components/EditCar';
 
 
 export default function App() {
