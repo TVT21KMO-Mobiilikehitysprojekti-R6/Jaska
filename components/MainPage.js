@@ -2,8 +2,9 @@
 import { View, Text, SafeAreaView, Button, TextInput, Pressable, Alert } from 'react-native'
 import React, { useDebugValue, useState, useEffect, useLayoutEffect } from 'react'
 import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
+import { toFireBase } from '../Helpers/toFireBase';
 import {firebase, onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, updateProfile  } from "firebase/auth";
 import Styles from './Styles';
 import { ScrollView } from 'react-native';
 import { Modal } from 'react-native';
@@ -11,17 +12,19 @@ import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
 import {getFirestore, doc, deleteDoc, getDocs, where} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
 
+
 const db = getFirestore();         //tämä piti olla ehkä tässä muuten meni delete vituiksi, siirto omalla vastuulla ehkä
 
 
 export default function MainPage({navigation, route, login5, username, password}) {
-  const carData = "ABC-123"
+  const [carData, setCarData] = useState("ABC-123");
   const [allEvents, setAllEvents] = useState([]);
   const [logged, setLogged] = useState(false);
   const [loggedUser, setLoggedUser] = useState("");
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
+  const [displayName, setDisplayName] = useState('');
 
 
  const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
@@ -48,6 +51,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
       if (user) {
         const uid = user.uid;
         setLoggedUser(uid);
+        setCarData(user.displayName)
       } else {
         console.log("Ei ole kirjautunut")
       }
@@ -113,10 +117,16 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   navigation.navigate('AddNewEvent', {testKey: event})
   }
 
+
+
+
   if ( logged){
   return(
     <View style={Styles.container}>
-      <Text style={Styles.heading}> Tapahtumat {carData} </Text>
+{/*                             {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }><Text style={Styles.textStyle}>Poista</Text>
+ */}
+      <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
+      
         <View style={Styles.ScrollView}>
           <View style={Styles.centeredView}>
             <Modal

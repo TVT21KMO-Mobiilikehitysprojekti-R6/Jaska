@@ -1,9 +1,11 @@
 import { View, Text, SafeAreaView, Button, TextInput } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import Styles from './Styles';
-import { createUser, auth, signInWithEmailAndPassword, onAuthStateChanged} from "../firebase/Config.js";
 import MainPage from './MainPage';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signOut, createUser, updateProfile  } from "firebase/auth";
+import { toFireBase } from '../Helpers/toFireBase';
+import {firebase, onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
+
 
 export default function LoginPage({navigation, setLogin}) {
 
@@ -20,9 +22,9 @@ export default function LoginPage({navigation, setLogin}) {
       const auth = getAuth()
       signInWithEmailAndPassword(auth,email,password)
       .then((userCredential) => {
-        //console.log("loginfunktiuon ser "+ userCredential.user.uid)
         setLogin2(true)
-        navigation.navigate("MainPage", {login5: userCredential.user.uid})
+        console.log("testiä loginsivun loginfunktiossa", userCredential)
+        navigation.navigate("MainPage", {login5: userCredential.user.uid}, {carPlate: userCredential.user.displayName})
         
       }).catch((error) => {
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
@@ -40,25 +42,40 @@ useEffect(  () => {
   setUserCreated(0)
 },[])
     
-    
+const signOut = () => {
+  const auth = getAuth();
+signOut(auth).then(() => {
+  console.log("Sign-out successful")
+}).catch((error) => {
+  // An error happened.
+});
+}    
 
-const createUser = (email, password) => {                 //TÄmä toimii, lisääö käyttäjän databaeen
-    const auth = getAuth()
-    createUserWithEmailAndPassword(auth, email, password)
+const createUser = (email, password, displayName) => {                 //TÄmä toimii, lisääö käyttäjän databaeen
+
+   const auth = getAuth()
+    createUserWithEmailAndPassword(auth, email, password, displayName)
   .then((userCredential) => {
     const user = userCredential.user;
-    setEmail();
+    updateUserProfile();
+    //setEmail();
     setPassword();
     setUserCreated(1)
+    setDisplayName(displayName)
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    // ..
   });
-
   }
 
+const updateUserProfile = () => {
+  const auth = getAuth()
+    updateProfile(auth.currentUser, {
+        displayName: displayName,
+     }).then(()=> {
+     })
+}
   return (
     <View style={Styles.container}>
       <Text style={Styles.heading}> Hey please login</Text>
@@ -83,6 +100,7 @@ const createUser = (email, password) => {                 //TÄmä toimii, lisä
             onPress={login}
             color="#841584"
             />
+            
         </View>
        <Text style={Styles.heading}> Create user</Text>
       <View style={Styles.input}>
@@ -99,25 +117,26 @@ const createUser = (email, password) => {                 //TÄmä toimii, lisä
             value={password}
             placeholder="Give your pasword to login..."       
             />
-            <TextInput  
-            sstyle={{flex: 0.75}}
-            onChangeText={text => setPhoneNumber(text)}
-            value={phoneNumber}
-            keyboardType='Puhelinnumero'
-            placeholder="Give your puhelinnumer to login..."       
-            />
+            
             <TextInput  
             sstyle={{flex: 0.75}}
             onChangeText={text => setDisplayName(text)}
             value={displayName}
             keyboardType='email-address'
-            placeholder="Give your name to login..."       
+            placeholder="Tähän rekisterinumero"       
             />
+            
+        
             <Button style={Styles.buttonLogIn} 
             title="Submit" 
-            onPress={ ()=> createUser(email, password, phoneNumber, displayName)}
+            onPress={ ()=> createUser(email, password, displayName)}
             color="#841584"
             />
+           {/*  <Button style={Styles.buttonLogIn} 
+            title="signout" 
+            onPress={ ()=> signOut()}
+            color="#841584"
+            />  */}
           </View> 
           {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
 
