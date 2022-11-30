@@ -24,7 +24,7 @@ export default function AddNewEvent({route, navigation}) {
     if (user) {
       const uid = user.uid;
       setUserID(user.uid);
-      console.log("käyttäjä ADDEVENT SIVULLA " +uid)
+      //console.log("käyttäjä ADDEVENT SIVULLA " +uid)
     } else {
       console.log("Ei ole kirjautunut")
     }
