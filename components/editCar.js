@@ -57,10 +57,10 @@ const getData = async() => {
    console.log("autonData", tempMessages)
 
    setCarData(tempMessages)
-  /*  setCarModel(carData.carModel)
-   console.log("autonmodel", carModel)
+   //setCarModel(carData.carModel)
+  //console.log("autonmodel", carModel)
    console.log("autonData", carData)
-   console.log("autonDatamodel", carData[0].carModel) */
+   console.log("autonDatamodel", carData[0].carMake) 
  })   
  return () => {
    unsubscribe()
@@ -96,9 +96,9 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
             keyboardType='email-address'
             placeholder="Tähän uusi merkki"       
             />
-             {carData != [] &&<Text> Auton Malli {carData[0].carModel}</Text> }
-            {carData != [] &&<Text> Ajokilometrit {carData[0].carMileage}</Text> }
-            {carData != [] &&<Text> Käyttöönottopäivä {carData[0].created}</Text> } 
+             {/* {carData != [] &&<Text> Auton Malli {carData.carModel}</Text> }
+            {carData != [] &&<Text> Ajokilometrit {carData.carMileage}</Text> }
+            {carData != [] &&<Text> Käyttöönottopäivä {carData.created}</Text> }  */}
 
 
 
