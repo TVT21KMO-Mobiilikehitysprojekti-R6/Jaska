@@ -106,6 +106,11 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   //navigation.navigate('AddNewEvent', {testKey: event})
   }
 
+ const carCreatedButton = () => {
+  toFireBase({carMake, carModel, carMileage, loggedUser})
+  setModalCarData(!modalCarData)
+ }
+
   return (
     <View style={Styles.container}>
       <Text style={Styles.heading}> Hey please login</Text>
@@ -200,7 +205,8 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
             />
             <Button style={Styles.buttonLogIn} 
             title="Luo auto" 
-            onPress={ ()=> toFireBase({carMake, carModel, carMileage, loggedUser})}
+            /* onPress={ ()=> toFireBase({carMake, carModel, carMileage, loggedUser})} */
+            onPress={ () => carCreatedButton()}
             color="#841584"
             />
             {console.log( "rivi 200" ,  loggedUser)}
