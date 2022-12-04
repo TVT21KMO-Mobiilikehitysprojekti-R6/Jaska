@@ -5,7 +5,7 @@ import MainPage from './MainPage';
 import { getAuth, createUserWithEmailAndPassword, signOut, createUser, updateProfile, onAuthStateChanged  } from "firebase/auth";
 import { toFireBase } from '../Helpers/toFireBase';
 import {firebase, onSnapshot, orderBy, query, QuerySnapshot, firestore, collection, addDoc, ADDEVENT, serverTimestamp, signInWithEmailAndPassword} from '../firebase/Config'
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function LoginPage({navigation, setLogin}) {
 
@@ -27,6 +27,19 @@ export default function LoginPage({navigation, setLogin}) {
   const [userID, setUserID] = useState('');
   const nakki=getAuth();
   //console.log(nakki)
+
+  const [passwordVisibility, setPasswordVisibility] = useState(true);  
+  const [rightIcon, setRightIcon] = useState('eye');
+
+  const handlePasswordVisibility = () => {
+    if (rightIcon === 'eye') {
+      setRightIcon('eye-off');
+      setPasswordVisibility(!passwordVisibility);   
+    } else if (rightIcon === 'eye-off') {  
+      setRightIcon('eye');
+      setPasswordVisibility(!passwordVisibility);
+    }  
+  };
 
   const login = () => {
       const auth = getAuth()
@@ -115,8 +128,6 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
     <View style={Styles.container}>
       <Text style={Styles.heading}> Hey please login</Text>
 
-
-        <View style={Styles.input}>
         <View style={Styles.centeredView}>                    
             <Modal                                                  
               animationType="slide"
@@ -150,11 +161,10 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
             keyboardType='email-address'
             placeholder="Tähän rekisterinumero"       
             />
-            <Button style={Styles.buttonLogIn} 
-            title="Submit" 
-            onPress={ ()=> createUser(email, password, displayName)}
-            color="#841584"
-            />
+            <Pressable style={Styles.button} 
+                onPress={ ()=> createUser(email, password, displayName)}>
+              <Text style={Styles.textStyle}>Luo tunnus</Text>
+            </Pressable>
          {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
           </View>     
                   <Pressable
@@ -233,33 +243,34 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
 
 
 
-
-
+      <View style={Styles.loginContainer}>
+        <View style={Styles.inputContainer}>
           <TextInput  
-            sstyle={{flex: 0.75}}
             onChangeText={text => setEmail(text)}
             value={email}
             keyboardType='email-address'
             placeholder="Give your name to login..."       
             />
+        </View>  
+          <View style={Styles.inputContainer}>
             <TextInput  
-            sstyle={{flex: 0.75}}
             onChangeText={text => setPassword(text)}
+            secureTextEntry={passwordVisibility}
             value={password}
             placeholder="Give your pasword to login..."       
             />
+            <Pressable onPress={handlePasswordVisibility}>
+              <MaterialCommunityIcons name={rightIcon} size={22} />
+            </Pressable>
           </View>
-        <View>
-          <Button style={Styles.buttonLogIn} 
-            title="Submit" 
-            onPress={login}
-            color="#841584"
-            />
-            
-        </View>
-       
-          
-          <Pressable style={Styles.button}  onPress={() => setModalCreateUser(true)}><Text style={Styles.buttonText}>Tee käyttäjätunnus</Text></Pressable>
+          <Pressable style={Styles.button} onPress={login}>
+            <Text style={Styles.textStyle}>Kirjaudu</Text>
+          </Pressable>                   
+      </View> 
+        
+          <Pressable style={Styles.button}  onPress={() => setModalCreateUser(true)}>
+            <Text style={Styles.textStyle}>Tee käyttäjätunnus</Text>
+          </Pressable>
 
     </View>
 

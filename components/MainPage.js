@@ -202,7 +202,9 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
               </ScrollView>
               
         </View>
-<Pressable style={Styles.button}  onPress={() => setModalVisible(true)}><Text style={Styles.buttonText}>Lisää tapahtuma</Text></Pressable>
+<Pressable style={Styles.button}  onPress={() => setModalVisible(true)}>
+  <Text style={Styles.textStyle}>Lisää tapahtuma</Text>
+</Pressable>
 
     </View>
 
