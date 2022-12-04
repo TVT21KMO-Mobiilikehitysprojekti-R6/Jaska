@@ -33,7 +33,7 @@ export default  StyleSheet.create({
     //display: 'flex',
     flex: 1,
     flexDirection: 'row',
-    padding:5,
+    padding:10,
     marginTop:5,
     marginBottom:10,
     justifyContent:'space-between',
@@ -46,9 +46,8 @@ export default  StyleSheet.create({
   },
   
 listText:{ //teksti ruutujen tekstien välit
-  display: 'flex',
-  padding: 10,
-  
+  //display: 'flex',
+  padding: 5,
 },
 centeredView: { //tapahtumien asettelu
   flex: 0,

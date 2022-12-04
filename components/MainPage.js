@@ -174,7 +174,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
               {
                 allEvents.map((id) => (
                   <View style={Styles.allEventsList} key={id.id}>
-                    <View style={Styles.event}>
+                    <View>
                       {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
                       {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
                     </View>
