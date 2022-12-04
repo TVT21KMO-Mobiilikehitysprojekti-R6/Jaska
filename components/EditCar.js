@@ -12,17 +12,18 @@ import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
 
 
 
-export default function editCar({route, navigation}) {
+export default function EditCar({route, navigation}) {
  
   const auth = getAuth();
 const [carMake, setCarMake] = useState('')
-const [carData, setCarData] = useState([])
+const [carData, setCarData] = useState('')
 const [loggedUser, setLoggedUser] = useState('')
 const [carModel, setCarModel] = useState('');
 
 useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
   
-  if(route.params?.car) { // muoks oli pricve
+  if(route.params?.loggedUser) { // muoks oli pricve
+    //setCarMake('')
       getData();
       /* const newLitres = {litres: route.params.litres};
       const newMileage = {mileage: route.params.mileage};
@@ -32,17 +33,20 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
       toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
        */
   }
-    getData();
-},[route.params?.user])
+    //getData();
+},[route.params.loggedUser])
 
 
-const getData = async() => {                   
-  //console.log("loggeduser", loggedUser)                   //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
-  const q = query(collection(firestore,initialCarData), where("user", "==", loggedUser ), orderBy('created','desc'))
+const getData = async() => {    
+                 
+  console.log("loggeduser", route.params?.loggedUser)                   //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+  setLoggedUser(route.params?.loggedUser);
+  const q = query(collection(firestore,initialCarData), /* where("user", "==", loggedUser ), */ orderBy('created','desc'))
   const unsubscribe = onSnapshot(q,(querySnapshot) => {
-    //console.log(q)
    const tempMessages = [] 
+   setCarData([])
    querySnapshot.forEach((doc) => {
+    console.log("tötö")
      const messageObject = {
        id: doc.id,                           //luetaan firebasesta automaattinen avain
        carModel: doc.data().carModel, 
@@ -51,20 +55,23 @@ const getData = async() => {
        created: convertFirbaseTimeStampToJS(doc.data().created),
        user: doc.data().user
      }
-     console.log("autonData222", messageObject)
+     console.log("messageobjekti", messageObject)
      tempMessages.push(messageObject)
+     console.log("tempmessages", tempMessages)
+     //carData.push(messageObject)
    })
-   console.log("autonData", tempMessages)
+   //console.log("autonData", tempMessages)
 
    setCarData(tempMessages)
    //setCarModel(carData.carModel)
   //console.log("autonmodel", carModel)
-   console.log("autonData", carData)
-   console.log("autonDatamodel", carData[0].carMake) 
+   console.log("cardata", carData)
+   //console.log("autonDatamodel", carData[0].carMake) 
+   //console.log("Testi 3", route.params.)
  })   
  return () => {
    unsubscribe()
-   
+   console.log("returin")
  }
 }
 
@@ -80,25 +87,31 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
 });  
   
   console.log(route.params?.carData)
-   
-      return(
+      if (carData == ''){
+        return (<View>
+
+          <Text>asf </Text>
+          </View>)
+      }
+      if (carData != '') {
+        return(
         <View>
 
-            <Text> </Text>
+            
             <Text> Rekisterinumero {route.params?.carData}</Text> 
             
-            {carData != [] && <Text> Auton merkki {carData[0].carMake} </Text>}
+            {carData != null && <Text> Auton merkki {carData[0].carMake} </Text>}
  
             <TextInput  
             sstyle={{flex: 0.75}}
             onChangeText={text => setCarMake(text)}
             value={carMake}
             keyboardType='email-address'
-            placeholder="Tähän uusi merkki"       
+            placeholder="Tähän uusi merkki tarvitaanko tätä??"       
             />
-             {/* {carData != [] &&<Text> Auton Malli {carData.carModel}</Text> }
-            {carData != [] &&<Text> Ajokilometrit {carData.carMileage}</Text> }
-            {carData != [] &&<Text> Käyttöönottopäivä {carData.created}</Text> }  */}
+              {carData != [] &&<Text> Auton Malli {carData[0].carModel}</Text> }
+            {carData != [] &&<Text> Ajokilometrit {carData[0].carMileage}</Text> }
+            {carData != [] &&<Text> Käyttöönottopäivä {carData[0].created}</Text> } 
 
 
 
@@ -108,7 +121,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
 
     )
       
-}
+}}
 
 
 

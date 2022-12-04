@@ -83,7 +83,7 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
       const newWash = {wash: route.params.wash};
       const newUser = {user: route.params.userID}
       toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
-      
+      console.log("uusitestie", allEvents)
   }
     getData();
 },[route.params?.price])
@@ -122,7 +122,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   if ( logged){
   return(
     <View style={Styles.container}>
-                             {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => navigation.navigate('editCar', {carData: carData}) }><Text style={Styles.textStyle}>Muokkaa autoa</Text>
+                             {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser}) }><Text style={Styles.textStyle}>Muokkaa autoa</Text>
  </Pressable>}
     
       <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
