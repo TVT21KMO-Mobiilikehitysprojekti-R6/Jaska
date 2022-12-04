@@ -25,6 +25,8 @@ export default function MainPage({navigation, route, login5, username, password}
   const auth = getAuth();
   //const [displayName, setDisplayName] = useState('');
 
+  //console.log(allEvents)
+
 
  const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
     const docRef = doc(db, "ADDEVENT", id)
@@ -83,7 +85,7 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
       const newWash = {wash: route.params.wash};
       const newUser = {user: route.params.userID}
       toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
-      console.log("uusitestie", allEvents)
+     // console.log("uusitestie", allEvents)
   }
     getData();
 },[route.params?.price])
@@ -123,7 +125,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   return(
     <View style={Styles.container}>
         {editButtonPressed != false && <Pressable style={Styles.button} 
-        onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser}) }>
+        onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser, allEvents: allEvents}) }>
         <Text style={Styles.textStyle}>Muokkaa autoa</Text>
         </Pressable>}
         {editButtonPressed != false && <Pressable style={Styles.button} 
@@ -178,8 +180,10 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                     {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
                     <Text style={Styles.listText}>{id.created}</Text>  
                     
-                      {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }><Text style={Styles.textStyle}>Poista</Text>
-                    </Pressable> }
+                      {editButtonPressed != false && <Pressable style={Styles.button} 
+                      onPress={() => deleteThis(id.id) }>
+                      <Text style={Styles.textStyle}>Poista</Text>
+                      </Pressable> }
 
                   </View>
                                    
