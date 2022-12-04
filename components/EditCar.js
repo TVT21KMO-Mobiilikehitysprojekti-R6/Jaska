@@ -12,16 +12,24 @@ import { convertFirbaseTimeStampToJS } from '../Helpers/TimeStamp';
 
 
 
-export default function EditCar({route, navigation}) {
- 
+export default function EditCar({route, navigation, allEvents}) {
+  
+   
+  /* console.log("allevents",route.params?.allEvents)
+  */
   const auth = getAuth();
 const [carMake, setCarMake] = useState('')
 const [carData, setCarData] = useState('')
 const [loggedUser, setLoggedUser] = useState('')
 const [carModel, setCarModel] = useState('');
+const [prices, setPrices] = useState([]);
+const [allPrices, setAllPrices] = useState (0);
 
+//console.log("prices",prices)
 useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
-  
+  calculatePrice()
+  setPrices(route.params?.allEvents)
+
   if(route.params?.loggedUser) { // muoks oli pricve
     //setCarMake('')
       getData();
@@ -34,19 +42,32 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
        */
   }
     //getData();
-},[route.params.loggedUser])
+},[])
+
+  const calculatePrice = (async) => {
+    var totalPrice = 0;
+    for(let i = 0; i < prices.length; i++) {
+      var price2 = parseInt(prices[i].price)
+      const newTotalPrice = totalPrice + price2
+      //console.log("newTotalPrice",newTotalPrice)
+      totalPrice =+ newTotalPrice;
+      }
+      //console.log("totalPrice",totalPrice)
+      setAllPrices(totalPrice);     
+}
+
+console.log("allPrices",allPrices)
 
 
-const getData = async() => {    
-                 
-  console.log("loggeduser", route.params?.loggedUser)                   //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+const getData = async() => {   
+ // console.log("loggeduser", route.params?.loggedUser)                   //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
   setLoggedUser(route.params?.loggedUser);
   const q = query(collection(firestore,initialCarData), /* where("user", "==", loggedUser ), */ orderBy('created','desc'))
   const unsubscribe = onSnapshot(q,(querySnapshot) => {
    const tempMessages = [] 
    setCarData([])
    querySnapshot.forEach((doc) => {
-    console.log("tötö")
+   // console.log("tötö")
      const messageObject = {
        id: doc.id,                           //luetaan firebasesta automaattinen avain
        carModel: doc.data().carModel, 
@@ -55,9 +76,9 @@ const getData = async() => {
        created: convertFirbaseTimeStampToJS(doc.data().created),
        user: doc.data().user
      }
-     console.log("messageobjekti", messageObject)
+    // console.log("messageobjekti", messageObject)
      tempMessages.push(messageObject)
-     console.log("tempmessages", tempMessages)
+    // console.log("tempmessages", tempMessages)
      //carData.push(messageObject)
    })
    //console.log("autonData", tempMessages)
@@ -65,7 +86,7 @@ const getData = async() => {
    setCarData(tempMessages)
    //setCarModel(carData.carModel)
   //console.log("autonmodel", carModel)
-   console.log("cardata", carData)
+   //console.log("cardata", carData)
    //console.log("autonDatamodel", carData[0].carMake) 
    //console.log("Testi 3", route.params.)
  })   
@@ -86,7 +107,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
   }
 });  
   
-  console.log(route.params?.carData)
+ //console.log(route.params?.carData)
       if (carData == ''){
         return (<View>
 
@@ -112,6 +133,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
               {carData != [] &&<Text> Auton Malli {carData[0].carModel}</Text> }
             {carData != [] &&<Text> Ajokilometrit {carData[0].carMileage}</Text> }
             {carData != [] &&<Text> Käyttöönottopäivä {carData[0].created}</Text> } 
+            {carData != [] &&<Text> Kokonaiskustannukset {route.params?.allEvents.price}</Text> }  
 
 
 

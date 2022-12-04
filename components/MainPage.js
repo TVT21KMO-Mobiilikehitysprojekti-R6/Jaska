@@ -11,8 +11,7 @@ import { Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
 import {getFirestore, doc, deleteDoc, getDocs, where} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
-
-
+import  {SignOut} from '../Helpers/SignOut';
 const db = getFirestore();         //tämä piti olla ehkä tässä muuten meni delete vituiksi, siirto omalla vastuulla ehkä
 
 
@@ -25,6 +24,8 @@ export default function MainPage({navigation, route, login5, username, password}
   const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
   //const [displayName, setDisplayName] = useState('');
+
+  //console.log(allEvents)
 
 
  const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
@@ -54,6 +55,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
         setCarData(user.displayName)
       } else {
         console.log("Ei ole kirjautunut")
+        navigation.navigate("LoginPage")
       }
     });  
 
@@ -83,7 +85,7 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
       const newWash = {wash: route.params.wash};
       const newUser = {user: route.params.userID}
       toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
-      console.log("uusitestie", allEvents)
+     // console.log("uusitestie", allEvents)
   }
     getData();
 },[route.params?.price])
@@ -122,8 +124,14 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   if ( logged){
   return(
     <View style={Styles.container}>
-                             {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser}) }><Text style={Styles.textStyle}>Muokkaa autoa</Text>
- </Pressable>}
+        {editButtonPressed != false && <Pressable style={Styles.button} 
+        onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser, allEvents: allEvents}) }>
+        <Text style={Styles.textStyle}>Muokkaa autoa</Text>
+        </Pressable>}
+        {editButtonPressed != false && <Pressable style={Styles.button} 
+        onPress={() => SignOut() }>
+        <Text style={Styles.textStyle}>Kirjaudu ulos</Text>
+        </Pressable>}
     
       <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
       
@@ -172,8 +180,10 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                     {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
                     <Text style={Styles.listText}>{id.created}</Text>  
                     
-                      {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }><Text style={Styles.textStyle}>Poista</Text>
-                    </Pressable> }
+                      {editButtonPressed != false && <Pressable style={Styles.button} 
+                      onPress={() => deleteThis(id.id) }>
+                      <Text style={Styles.textStyle}>Poista</Text>
+                      </Pressable> }
 
                   </View>
                                    
