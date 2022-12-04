@@ -11,8 +11,7 @@ import { Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import LoginPage from './LoginPage';
 import {getFirestore, doc, deleteDoc, getDocs, where} from "firebase/firestore";        //tämä piti olla tässä muuten meni delete vituiksi, siirto omalla vastuulla
-
-
+import  {SignOut} from '../Helpers/SignOut';
 const db = getFirestore();         //tämä piti olla ehkä tässä muuten meni delete vituiksi, siirto omalla vastuulla ehkä
 
 
@@ -54,6 +53,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
         setCarData(user.displayName)
       } else {
         console.log("Ei ole kirjautunut")
+        navigation.navigate("LoginPage")
       }
     });  
 
@@ -122,8 +122,14 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   if ( logged){
   return(
     <View style={Styles.container}>
-                             {editButtonPressed != false && <Pressable style={Styles.button} onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser}) }><Text style={Styles.textStyle}>Muokkaa autoa</Text>
- </Pressable>}
+        {editButtonPressed != false && <Pressable style={Styles.button} 
+        onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser}) }>
+        <Text style={Styles.textStyle}>Muokkaa autoa</Text>
+        </Pressable>}
+        {editButtonPressed != false && <Pressable style={Styles.button} 
+        onPress={() => SignOut() }>
+        <Text style={Styles.textStyle}>Kirjaudu ulos</Text>
+        </Pressable>}
     
       <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
       
