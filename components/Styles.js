@@ -33,7 +33,7 @@ export default  StyleSheet.create({
     //display: 'flex',
     flex: 1,
     flexDirection: 'row',
-    padding:10,
+    padding:5,
     marginTop:5,
     marginBottom:10,
     justifyContent:'space-between',
