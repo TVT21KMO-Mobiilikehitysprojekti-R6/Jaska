@@ -5,7 +5,7 @@ export default  StyleSheet.create({
   container: {
       flex: 1,
       backgroundColor: '#fff',
-      paddingTop: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
+      //paddingTop: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
       alignItems: 'center',
       // justifyContent: 'center',
   },
@@ -19,6 +19,24 @@ export default  StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     color: 'white'
+  },
+  loginContainer: { // login-ruutu
+    width: '96%',
+    borderWidth: 2,
+    borderColor: '#008000',
+    padding: 20,
+    borderRadius: 5
+  },
+  inputContainer: {
+    width: '100%',
+    padding: 5,
+    borderRadius: 8,
+    margin: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 4,
+    borderColor: '#d7d7d7',
+    justifyContent: 'space-between'
   },
   ScrollView: { // tausta johon tapahtuvat tulevat - iso nelio
     flex: 1,
@@ -46,9 +64,8 @@ export default  StyleSheet.create({
   },
   
 listText:{ //teksti ruutujen tekstien välit
-  display: 'flex',
-  padding: 10,
-  
+  //display: 'flex',
+  padding: 5,
 },
 centeredView: { //tapahtumien asettelu
   flex: 0,

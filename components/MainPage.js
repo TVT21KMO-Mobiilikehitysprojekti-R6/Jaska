@@ -174,16 +174,26 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
               {
                 allEvents.map((id) => (
                   <View style={Styles.allEventsList} key={id.id}>
-
-                    {id.mileage!= null && <Text style={Styles.listText}>{id.mileage}Km</Text>}
-                    {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
-                    {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
-                    <Text style={Styles.listText}>{id.created}</Text>  
+                    <View>
+                      {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
+                      {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
+                    </View>
+                    <View>
+                      <Text style={Styles.listText}>{id.created}</Text> 
+                      {id.mileage!= null && <Text style={Styles.listText}>{id.mileage}Km</Text>}
+                    </View>
                     
-                      {editButtonPressed != false && <Pressable style={Styles.button} 
-                      onPress={() => deleteThis(id.id) }>
-                      <Text style={Styles.textStyle}>Poista</Text>
-                      </Pressable> }
+                    {editButtonPressed != false && <View> 
+                        <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }>
+                          <Text style={Styles.textStyle}>Poista</Text>
+                        </Pressable> 
+                      </View>}
+                    
+                      
+                    
+                    
+                     
+      
 
                   </View>
                                    
@@ -192,7 +202,9 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
               </ScrollView>
               
         </View>
-<Pressable style={Styles.button}  onPress={() => setModalVisible(true)}><Text style={Styles.buttonText}>Lisää tapahtuma</Text></Pressable>
+<Pressable style={Styles.button}  onPress={() => setModalVisible(true)}>
+  <Text style={Styles.textStyle}>Lisää tapahtuma</Text>
+</Pressable>
 
     </View>
 
