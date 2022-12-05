@@ -39,9 +39,23 @@ export default function MainPage({navigation, route, username, password}) {
     setEditButtonPressed(!editButtonPressed)
   } 
 
-  const toFireBase = async (litres,mileage,price,wash,userID ) => {      //Tämä lisää firebaseen 
+  const toFireBase = async (litres,mileage,price,wash,userID, avgConsumptionShort) => {      //Tämä lisää firebaseen 
+    var i = 0;
+    var latestMileage = mileage.mileage
+    var secondLatestMileage = 0;
+    var latestFuel = litres.litres;
+    
+    while(isNaN(secondLatestMileage)|| secondLatestMileage == 0){
+      i++
+      secondLatestMileage = parseInt(allEvents[i].mileage)
+      if(isNaN(secondLatestMileage) == true){ secondLatestMileage = 0 }
+    }
+    var mileageChange = latestMileage-secondLatestMileage
+    var AVGC = (latestFuel/mileageChange*100).toFixed(2)
+
+
     const docRef = await addDoc(collection(firestore,ADDEVENT),{
-      data: litres, mileage, price, wash, 
+      data: litres, mileage, price, wash, AVGC,
       created: serverTimestamp(),
       user: userID,
     }).catch(error => console.log(error))
@@ -74,55 +88,54 @@ export default function MainPage({navigation, route, username, password}) {
     }) 
   }, [editButtonPressed])  
 
-  useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
+  useEffect((allEvents) => {  //Tämä hakee datan firebasesta, vai hakeeko?
     setLogged(true)      //tämä lisätty
     if(route.params?.price) { // muoks oli pricve
-        getData();
+        getData()
         const newLitres = {litres: route.params.litres};
         const newMileage = {mileage: route.params.mileage};
         const newPrice = {price: route.params.price};
         const newWash = {wash: route.params.wash};
         const newUser = {user: route.params.userID}
-        toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
+        toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user, avgConsumptionShort);
       // console.log("uusitestie", allEvents)
     }
       getData();
   },[route.params?.price])
 
-  const averageConsumptionShort = (allEvents) => {
+  const averageConsumptionShort = async() => {
     var i = 0;
-    var initialMileage = parseInt(allEvents[i].mileage)
-    var initialMileage2 = 0;
-    var litres1 = parseInt(allEvents[i].litres);
+    var latestMileage = parseInt(allEvents[i].mileage)
+    var secondLatestMileage = 0;
+    var latestFuel = parseInt(allEvents[i].litres);
     var litres2 = 0;
-
-    while(initialMileage == 0){
+    while(isNaN(latestMileage)){
       i++;
-      initialMileage = parseInt(allEvents[i].mileage)
-      if(isNaN(initialMileage) == true){ initialMileage = 0 }
+      latestMileage = parseInt(allEvents[i].mileage)
+      if(isNaN(latestMileage) == true){ latestMileage = 0 }
     }
-    while(initialMileage2 == 0){
+    while(isNaN(secondLatestMileage)|| secondLatestMileage == 0){
       i++
-      initialMileage2 = parseInt(allEvents[i].mileage)
-      if(isNaN(initialMileage2) == true){ initialMileage2 = 0 }
+      secondLatestMileage = parseInt(allEvents[i].mileage)
+      if(isNaN(secondLatestMileage) == true){ secondLatestMileage = 0 }
     }
-    var mileageChange = initialMileage-initialMileage2
+    var mileageChange = latestMileage-secondLatestMileage
 
-
-    while(litres1 == 0){
+    while(isNaN(latestFuel)){
       i++;
-      litres1 = parseInt(allEvents[i].litres)
-      if(isNaN(litres1) == true){ litres1 = 0 }
+      latestFuel = parseInt(allEvents[i].litres)
+      if(isNaN(latestFuel) == true){ latestFuel = 0 }
     }
     while(litres2 == 0){
       i++
       litres2 = parseInt(allEvents[i].litres)
       if(isNaN(litres2) == true){ litres2 = 0 }
     }
-    
-    var litresChange = litres1 - litres2
+    var litresChange = latestFuel - litres2
+    console.log("litres1", latestFuel)
+    console.log("milagecahge", mileageChange)
 
-    setAvgConsumptionShort(litres1/mileageChange)
+    setAvgConsumptionShort(latestFuel/mileageChange*100)
     console.log("avgcons", avgConsumptionShort)
 
 
@@ -140,13 +153,13 @@ export default function MainPage({navigation, route, username, password}) {
           mileage: doc.data().mileage.mileage,  
           price: doc.data().price.price, 
           wash: doc.data().wash.wash,
+          AVGC: doc.data().AVGC,
           created: convertFirbaseTimeStampToJS(doc.data().created),
           user: doc.data().user
         }
         tempMessages.push(messageObject)
       })  
       setAllEvents(tempMessages)
-      averageConsumptionShort(tempMessages);     
 
     })  
     return () => {
@@ -216,7 +229,7 @@ export default function MainPage({navigation, route, username, password}) {
                     <View style={Styles.allEventsList} key={id.id}>
                       <View>
                         {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
-                        {id.litres!= null && <Text style={Styles.listText}>Keskikulutus { avgConsumptionShort }</Text>}
+                        {id.litres!= null && <Text style={Styles.listText}>Keskikulutus { id.AVGC } L/100km</Text>}
                         {id.wash == 1 && <Text style={Styles.listText}>Sisäpesu</Text>}
                         {id.wash == 2 && <Text style={Styles.listText}>Ulkopesu</Text>}
                         {id.litres!= null && <Text style={Styles.listText}>Tankkaus {id.litres}L</Text>}
