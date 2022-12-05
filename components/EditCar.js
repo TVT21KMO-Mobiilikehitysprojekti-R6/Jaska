@@ -24,31 +24,37 @@ export default function EditCar({route, navigation, allEvents}) {
   var currentMileage = 0
   var carDataVar = 0
   const [mileageSinceStart, setMileageSinceStart] = useState (0)
+  const [ AvgConsumptionLong, setAvgConsumptionLong] = useState (0)
+  const [AVGConsumptionShort, setAvgConsumptionShort] = useState (0)
 
 
-  useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
-    //setLoggedUser(route.params?.loggedUser);
+  useEffect(() => {  
     if(route.params?.loggedUser) {
         getData(); 
     }
   },[route.params?.loggedUser])
 
-  const calculatePrice = (allEvents) => {
+  const calculatePrice = (allEvents) => {       // Lakee kokonaishinnan
     var totalPrice = 0;
     for(let i = 0; i < allEvents.length; i++) {
-      var price2 = parseInt(allEvents[i].price)
-      const newTotalPrice = totalPrice + price2
-      totalPrice =+ newTotalPrice;
+      totalPrice += parseInt(allEvents[i].price)
     }
     setAllPrices(totalPrice);     
   }
 
-  const averageConsumption = () => {
+  const averageConsumption = (allEvents) => {
     var initialMileage = parseInt(carDataVar[0].carMileage)
     setMileageSinceStart (currentMileage-initialMileage)
+    var totalLitres = 0;
+     for(let i = 0; i < allEvents.length; i++) {
+      var litres2 = parseInt(allEvents[i].litres)
+      if(isNaN(litres2) == true){ litres2 = 0 }
+      totalLitres += litres2
+    } 
+     setAvgConsumptionLong((totalLitres/(currentMileage-initialMileage))*100)
   }
 
-  const getLatestMileage = () => {
+  const getLatestMileage = () => {      //Viimeisin kilometrilukema, viimeisimmästä lisäyksestä firebaseen/allEventsiin
     var i=0
      currentMileage = route.params?.allEvents[i].mileage
     while (currentMileage == null){
@@ -60,15 +66,13 @@ export default function EditCar({route, navigation, allEvents}) {
 
   const getData = async() => {     
     getLatestMileage();
-    
-    //console.log("currenntt", currentMileage);
     calculatePrice(route.params?.allEvents);
+    console.log("loggeduseri", route.params?.loggedUser)
     const q = query(collection(firestore,initialCarData),  where("user", "==", route.params?.loggedUser ),  orderBy('created','desc'))
     const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
     setCarData([])
     querySnapshot.forEach((doc) => {
-    // console.log("tötö")
       const messageObject = {
         id: doc.id,                           //luetaan firebasesta automaattinen avain
         carModel: doc.data().carModel, 
@@ -81,7 +85,8 @@ export default function EditCar({route, navigation, allEvents}) {
     })
     carDataVar = tempMessages
     setCarData(tempMessages)
-    averageConsumption();
+    averageConsumption(route.params?.allEvents);
+
 
     })   
     return () => {
@@ -100,12 +105,6 @@ export default function EditCar({route, navigation, allEvents}) {
       console.log("Ei ole kirjautunut")
     }
   });  
-
-
-
-
-
-
 
   if (carData == ''){
     return (
@@ -127,12 +126,12 @@ export default function EditCar({route, navigation, allEvents}) {
         keyboardType='email-address'
         placeholder="Tähän uusi merkki tarvitaanko tätä??"       
       />
-
       {carData != [] &&<Text> Auton Malli {carData[0].carModel}</Text> }
       {carData != [] &&<Text> Ajokilometrit sovelluksen käyttöönotossa {carData[0].carMileage}</Text> }
       {carData != [] &&<Text> Käyttöönottopäivä {carData[0].created}</Text> } 
       {carData != [] &&<Text> Kokonaiskustannukset {allPrices} €</Text> }
       {carData != [] &&<Text> Kokonaiskilometrit alusta {mileageSinceStart} </Text> }  
+      {carData != [] &&<Text> Kokonaiskulutus ohjelman käyttöönototsta {AvgConsumptionLong} L/100KM </Text> }  
     </View>
     )
   }

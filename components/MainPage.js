@@ -15,7 +15,7 @@ import  {SignOut} from '../Helpers/SignOut';
 const db = getFirestore();         //tämä piti olla ehkä tässä muuten meni delete vituiksi, siirto omalla vastuulla ehkä
 
 
-export default function MainPage({navigation, route, login5, username, password}) {
+export default function MainPage({navigation, route, username, password}) {
   const [carData, setCarData] = useState("ABC-123");
   const [allEvents, setAllEvents] = useState([]);
   const [logged, setLogged] = useState(false);
@@ -23,194 +23,198 @@ export default function MainPage({navigation, route, login5, username, password}
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
+  const [washType, setWashType] = useState('')
   //const [displayName, setDisplayName] = useState('');
 
-  //console.log(allEvents)
 
-
- const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
+  const deleteThis= async (id) => {                //Tämä poistaa yhden eventin
     const docRef = doc(db, "ADDEVENT", id)
-  deleteDoc(docRef)
-  .then(() => {console.log("delete onnistui")})
-  .catch(error => {
-    console.log(error)
-  })
-  getData();
-  setEditButtonPressed(!editButtonPressed)
-} 
+    deleteDoc(docRef)
+    .then(() => {console.log("delete onnistui")})
+    .catch(error => {
+      console.log(error)
+    })
+    getData();
+    setEditButtonPressed(!editButtonPressed)
+  } 
 
-const toFireBase = async (litres,mileage,price,wash,userID ) => {      //Tämä lisää firebaseen 
-  const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    data: litres, mileage, price, wash, 
-    created: serverTimestamp(),
-    user: userID,
-  }).catch(error => console.log(error))
-}
-
-
-onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
-      if (user) {
-        const uid = user.uid;
-        setLoggedUser(uid);
-        setCarData(user.displayName)
-      } else {
-        console.log("Ei ole kirjautunut")
-        navigation.navigate("LoginPage")
-      }
-    });  
+  const toFireBase = async (litres,mileage,price,wash,userID ) => {      //Tämä lisää firebaseen 
+    const docRef = await addDoc(collection(firestore,ADDEVENT),{
+      data: litres, mileage, price, wash, 
+      created: serverTimestamp(),
+      user: userID,
+    }).catch(error => console.log(error))
+  }
 
 
+  onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
+    if (user) {
+      //const uid = user.uid;
+      setLoggedUser(user.uid);
+      setCarData(user.displayName)
+    } else {
+      console.log("Ei ole kirjautunut")
+      navigation.navigate("LoginPage")
+    }
+  });  
 
-useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napin
-  navigation.setOptions({
-      headerRight: () => (
-          <Feather
+
+  useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napin
+    navigation.setOptions({
+        headerRight: () => (
+            <Feather
               style={Styles.navButton}
               name="edit"
               size={24}
               color="black"
               onPress={ () => setEditButtonPressed(!editButtonPressed)}           //navigation.navigate('Edit')}
-          />  
-      ),  
-  }) 
-}, [editButtonPressed])  
+            />  
+        ),  
+    }) 
+  }, [editButtonPressed])  
 
-useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
-  setLogged(true)      //tämä lisätty
-  if(route.params?.price) { // muoks oli pricve
+  useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
+    setLogged(true)      //tämä lisätty
+    if(route.params?.price) { // muoks oli pricve
+        getData();
+        const newLitres = {litres: route.params.litres};
+        const newMileage = {mileage: route.params.mileage};
+        const newPrice = {price: route.params.price};
+        const newWash = {wash: route.params.wash};
+        const newUser = {user: route.params.userID}
+        toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
+      // console.log("uusitestie", allEvents)
+    }
       getData();
-      const newLitres = {litres: route.params.litres};
-      const newMileage = {mileage: route.params.mileage};
-      const newPrice = {price: route.params.price};
-      const newWash = {wash: route.params.wash};
-      const newUser = {user: route.params.userID}
-      toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
-     // console.log("uusitestie", allEvents)
-  }
-    getData();
-},[route.params?.price])
+  },[route.params?.price])
 
-const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
-   const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
-   const unsubscribe = onSnapshot(q,(querySnapshot) => {
-    const tempMessages = [] 
-    querySnapshot.forEach((doc) => {
-      const messageObject = {
-        id: doc.id,                           //luetaan firebasesta automaattinen avain
-        litres: doc.data().data.litres, 
-        mileage: doc.data().mileage.mileage,  
-        price: doc.data().price.price, 
-        wash: doc.data().wash.wash,
-        created: convertFirbaseTimeStampToJS(doc.data().created),
-        user: doc.data().user
-      }
-      tempMessages.push(messageObject)
+  const getData = async() => {      
+    console.log("loggedUser5555555555", route.params?.loggedUser2)
+    console.log("LoggeduseriMainpageGetdata", loggedUser )                                //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+    const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.loggedUser2 ), orderBy('created','desc'))
+    const unsubscribe = onSnapshot(q,(querySnapshot) => {
+      const tempMessages = [] 
+      querySnapshot.forEach((doc) => {
+        const messageObject = {
+          id: doc.id,                           //luetaan firebasesta automaattinen avain
+          litres: doc.data().data.litres, 
+          mileage: doc.data().mileage.mileage,  
+          price: doc.data().price.price, 
+          wash: doc.data().wash.wash,
+          created: convertFirbaseTimeStampToJS(doc.data().created),
+          user: doc.data().user
+        }
+        tempMessages.push(messageObject)
+      })  
+      setAllEvents(tempMessages)
+      
+
     })  
-    setAllEvents(tempMessages)
-  })  
-  return () => {
-    unsubscribe()
-    
-  }
-}
-const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio
-  setModalVisible(!modalVisible)
-  navigation.navigate('AddNewEvent', {testKey: event})
-  }
-
-
-
-
-  if ( logged){
-  return(
-    <View style={Styles.container}>
-        {editButtonPressed != false && <Pressable style={Styles.button} 
-        onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser, allEvents: allEvents}) }>
-        <Text style={Styles.textStyle}>Muokkaa autoa</Text>
-        </Pressable>}
-        {editButtonPressed != false && <Pressable style={Styles.button} 
-        onPress={() => SignOut() }>
-        <Text style={Styles.textStyle}>Kirjaudu ulos</Text>
-        </Pressable>}
-    
-      <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
+    return () => {
+      unsubscribe()
       
-        <View style={Styles.ScrollView}>
-          <View style={Styles.centeredView}>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
-                setModalVisible(!modalVisible);
-              }}>
-              <View style={Styles.centeredView}>
-                <View style={Styles.modalView}>
-                  <Text style={Styles.modalText}>Valitse tapahtuma, </Text>
-                  <Text style={Styles.modalText}>jonka haluat lisätä.</Text>
-                  <Pressable
-                    style={[Styles.button, Styles.button]}
-                    onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={Styles.textStyle}>Hide Modal</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[Styles.button, Styles.button]}
-                    onPress={() => newFuelerHandle('fuel')}>
-                    <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[Styles.button, Styles.button]}
-                    onPress={() => newFuelerHandle('wash')}>
-                    <Text style={Styles.textStyle}>Uusi Pesu</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </Modal>
-          </View>
+    }
+  }
+  const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio
+    setModalVisible(!modalVisible)
+    navigation.navigate('AddNewEvent', {testKey: event})
+    }
 
-          <ScrollView>
 
-              {
-                allEvents.map((id) => (
-                  <View style={Styles.allEventsList} key={id.id}>
-                    <View>
-                      {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
-                      {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
-                    </View>
-                    <View>
-                      <Text style={Styles.listText}>{id.created}</Text> 
-                      {id.mileage!= null && <Text style={Styles.listText}>{id.mileage}Km</Text>}
-                    </View>
-                    
-                    {editButtonPressed != false && <View> 
-                        <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }>
-                          <Text style={Styles.textStyle}>Poista</Text>
-                        </Pressable> 
-                      </View>}
-                    
-                      
-                    
-                    
-                     
+    if ( logged){
+    return(
+      <View style={Styles.container}>
+          {editButtonPressed != false && <Pressable style={Styles.button} 
+          onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser, allEvents: allEvents}) }>
+          <Text style={Styles.textStyle}>Muokkaa autoa</Text>
+          </Pressable>}
+          {editButtonPressed != false && <Pressable style={Styles.button} 
+          onPress={() => SignOut() }>
+          <Text style={Styles.textStyle}>Kirjaudu ulos</Text>
+          </Pressable>}
       
-
+        <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
+        
+          <View style={Styles.ScrollView}>
+            <View style={Styles.centeredView}>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  Alert.alert('Modal has been closed.');
+                  setModalVisible(!modalVisible);
+                }}>
+                <View style={Styles.centeredView}>
+                  <View style={Styles.modalView}>
+                    <Text style={Styles.modalText}>Valitse tapahtuma, </Text>
+                    <Text style={Styles.modalText}>jonka haluat lisätä.</Text>
+                    <Pressable
+                      style={[Styles.button, Styles.button]}
+                      onPress={() => setModalVisible(!modalVisible)}>
+                      <Text style={Styles.textStyle}>Hide Modal</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[Styles.button, Styles.button]}
+                      onPress={() => newFuelerHandle('fuel')}>
+                      <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[Styles.button, Styles.button]}
+                      onPress={() => newFuelerHandle('wash')}>
+                      <Text style={Styles.textStyle}>Uusi Pesu</Text>
+                    </Pressable>
                   </View>
-                                   
-                  ))
-              }
-              </ScrollView>
-              
-        </View>
-<Pressable style={Styles.button}  onPress={() => setModalVisible(true)}>
-  <Text style={Styles.textStyle}>Lisää tapahtuma</Text>
-</Pressable>
+                </View>
+              </Modal>
+            </View>
 
-    </View>
+            <ScrollView>
 
-  )
-}else {
-  console.log("EI onnistu");
-};
+                {
+                  allEvents.map((id) => (
+                    <View style={Styles.allEventsList} key={id.id}>
+                      <View>
+                        {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
+                        {id.wash == 1 && <Text style={Styles.listText}>Sisäpesu</Text>}
+                        {id.wash == 2 && <Text style={Styles.listText}>Ulkopesu</Text>}
+
+
+                        {id.litres!= null && <Text style={Styles.listText}>Tankkaus {id.litres}L</Text>}
+                      </View>
+                      <View>
+                        <Text style={Styles.listText}>{id.created}</Text> 
+                        {id.mileage!= null && <Text style={Styles.listText}>{id.mileage}Km</Text>}
+                      </View>
+                      
+                      {editButtonPressed != false && <View> 
+                          <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }>
+                            <Text style={Styles.textStyle}>Poista</Text>
+                          </Pressable> 
+                        </View>}
+                      
+                        
+                      
+                      
+                      
+        
+
+                    </View>
+                                    
+                    ))
+                }
+                </ScrollView>
+                
+          </View>
+  <Pressable style={Styles.button}  onPress={() => setModalVisible(true)}>
+    <Text style={Styles.textStyle}>Lisää tapahtuma</Text>
+  </Pressable>
+
+      </View>
+
+    )
+  }else {
+    console.log("EI onnistu");
+  };
 } 
 

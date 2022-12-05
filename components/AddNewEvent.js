@@ -16,7 +16,7 @@ export default function AddNewEvent({route, navigation}) {
   const auth = getAuth();
   const user = auth.currentUser;
   var radio_props = [
-    {label: 'Ulkopesu', value: 0 },
+    {label: 'Ulkopesu', value: 2 },
     {label: 'Sisäpesu', value: 1 }
   ]
 
@@ -36,78 +36,80 @@ export default function AddNewEvent({route, navigation}) {
         alert('Something went wrong!!')
         console.log("tyhjä lisäys kenttä")
     } if (event === 'fuel') {
-        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID})
+        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, loggedUser2: userID})
     } if (event === 'wash') {
-      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID})
+      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, loggedUser2: userID})
   }   
-}
-    const status = route.params.testKey
-    if (status == 'fuel') {
-  return (
-    <View style={Styles.centeredView}>
-        <Text>Lisätään tankkaus</Text>
-        <Text></Text>
-        <Text>Anna litrat</Text>
-          <TextInput
-            style={Styles.baitWindowText}
-            onChangeText={onChangeLitres}
-            value={litres}
-            placeholder="Tähän litrat"
-            keyboardType="numeric"
-          />
-      <Text>Anna Kilometrit</Text>
-      <TextInput
-        style={Styles.baitWindowText}
-        onChangeText={onChangeMileage}
-        value={mileage}
-        placeholder="Tähän kilometrit"
-        keyboardType="numeric"
-      />
-      <Text>Anna Hinta</Text>
-      <TextInput
-        style={Styles.baitWindowText}
-        onChangeText={onChangePrice}
-        value={price}
-        placeholder="Tähän tankkauksen hinta"
-        keyboardType="numeric"
-      />
-      <Button title= "Lisää tankkaus"
-            style={Styles.button} 
-            onPress={ ()=> acceptEvent('fuel') }>Lisää tankkaus</Button>
-    </View>
-  ) }
-
+  }
+  const status = route.params.testKey
+  if (status == 'fuel') {
+    return (
+      <View style={Styles.centeredView}>
+          <Text>Lisätään tankkaus</Text>
+          <Text></Text>
+          <Text>Anna litrat</Text>
+            <TextInput
+              style={Styles.baitWindowText}
+              onChangeText={onChangeLitres}
+              value={litres}
+              placeholder="Tähän litrat"
+              keyboardType="numeric"
+            />
+        <Text>Anna Kilometrit</Text>
+        <TextInput
+          style={Styles.baitWindowText}
+          onChangeText={onChangeMileage}
+          value={mileage}
+          placeholder="Tähän kilometrit"
+          keyboardType="numeric"
+        />
+        <Text>Anna Hinta</Text>
+        <TextInput
+          style={Styles.baitWindowText}
+          onChangeText={onChangePrice}
+          value={price}
+          placeholder="Tähän tankkauksen hinta"
+          keyboardType="numeric"
+        />
+        <Button title= "Lisää tankkaus"
+              style={Styles.button} 
+              onPress={ ()=> acceptEvent('fuel') }>Lisää tankkaus</Button>
+      </View>
+    ) 
+  }
 
   if (status == 'wash') {
     return (
       <View style={Styles.centeredView}>
-          <Text style={{margin:10}}>Lisätään pesu</Text>
-          <Text>Anna pesun hinta</Text>
-            <TextInput
-              style={Styles.baitWindowText}
-              onChangeText={onChangePrice}
-              value={price}
-              placeholder="Tähän hinta"
-              keyboardType="numeric"/>
-              <Text></Text>
-         <Text>Anna pesun tyyppi</Text>
-         <RadioForm
-            radio_props={radio_props}
-            initial={0}
-            buttonColor={'black'}
-            selectedButtonColor = 'black'
-            onPress={(value) => onChangeWash(value)}
-          />
-          <Pressable 
-            style={Styles.button} 
-            onPress={()=> acceptEvent('wash')}>
-              <Text style={Styles.buttonText}>Lisää pesu</Text>
-          </Pressable>
+        <Text style={{margin:10}}>Lisätään pesu</Text>
+        <Text>Anna pesun hinta</Text>
+        <TextInput
+          style={Styles.baitWindowText}
+          onChangeText={onChangePrice}
+          value={price}
+          placeholder="Tähän hinta"
+          keyboardType="numeric"
+        />
+        <Text></Text>
+        <Text>Anna pesun tyyppi</Text> 
+        <RadioForm
+          radio_props={radio_props}
+          initial={2}
+          buttonColor={'black'}
+          selectedButtonColor = 'black'
+          onPress={(value) => onChangeWash(value)}
+        />
+        <Pressable 
+          style={Styles.button} 
+          onPress={()=> acceptEvent('wash')}
+        >
+          <Text style={Styles.buttonText}>Lisää pesu</Text>
+        </Pressable>
       </View>
     ) }
   return (
-      <View>
-        <Text>Ei toimi</Text>
+    <View>
+      <Text>Ei toimi</Text>
     </View>
   )
 }
