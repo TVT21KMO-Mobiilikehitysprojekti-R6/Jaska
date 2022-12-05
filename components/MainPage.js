@@ -53,10 +53,10 @@ export default function MainPage({navigation, route, username, password}) {
       setLoggedUser(user.uid);
       setCarData(user.displayName)
     } else {
-      console.log("Ei ole kirjautunut")
+      //console.log("Ei ole kirjautunut")
       navigation.navigate("LoginPage")
     }
-  });  
+  },);  
 
 
   useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napin
@@ -88,9 +88,7 @@ export default function MainPage({navigation, route, username, password}) {
       getData();
   },[route.params?.price])
 
-  const getData = async() => {      
-    console.log("loggedUser5555555555", route.params?.loggedUser2)
-    console.log("LoggeduseriMainpageGetdata", loggedUser )                                //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+  const getData = async() => {      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa                
     const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.loggedUser2 ), orderBy('created','desc'))
     const unsubscribe = onSnapshot(q,(querySnapshot) => {
       const tempMessages = [] 
@@ -107,18 +105,17 @@ export default function MainPage({navigation, route, username, password}) {
         tempMessages.push(messageObject)
       })  
       setAllEvents(tempMessages)
-      
-
     })  
     return () => {
       unsubscribe()
       
     }
   }
+
   const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio
     setModalVisible(!modalVisible)
     navigation.navigate('AddNewEvent', {testKey: event})
-    }
+  }
 
 
     if ( logged){
@@ -176,6 +173,7 @@ export default function MainPage({navigation, route, username, password}) {
                     <View style={Styles.allEventsList} key={id.id}>
                       <View>
                         {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
+                        {id.price!= null && <Text style={Styles.listText}>Keskikulutus</Text>}
                         {id.wash == 1 && <Text style={Styles.listText}>Sisäpesu</Text>}
                         {id.wash == 2 && <Text style={Styles.listText}>Ulkopesu</Text>}
 

@@ -102,7 +102,7 @@ export default function EditCar({route, navigation, allEvents}) {
       setLoggedUser(uid);
       //setCarData(user.displayName)
     } else {
-      console.log("Ei ole kirjautunut")
+      //console.log("Ei ole kirjautunut")
     }
   });  
 

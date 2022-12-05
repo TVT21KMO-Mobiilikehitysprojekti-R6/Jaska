@@ -81,7 +81,7 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
     setLoggedUser(uid);
     setCarPlate(user.displayName)
   } else {
-    console.log("Ei ole kirjautunut")
+    //console.log("Ei oasdfasdfasdasfd kirjautunut")
   }
 });   
 
@@ -219,7 +219,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
             onPress={ () => carCreatedButton()}
             color="#841584"
             />
-            {console.log( "rivi 200" ,  loggedUser)}
+           
          {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
           <Text style={Styles.heading}>{displayName}</Text>
           </View>     

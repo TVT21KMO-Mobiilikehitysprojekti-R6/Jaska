@@ -26,7 +26,7 @@ export default function AddNewEvent({route, navigation}) {
       setUserID(user.uid);
       //console.log("käyttäjä ADDEVENT SIVULLA " +uid)
     } else {
-      console.log("Ei ole kirjautunut")
+      //console.log("Ei ole kirjautunut")
     }
   });  
   
