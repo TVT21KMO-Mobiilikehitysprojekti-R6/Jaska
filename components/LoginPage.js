@@ -232,17 +232,6 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
               </View>
             </Modal>
           </View>
-
-
-
-
-
-
-
-
-
-
-
       <View style={Styles.loginContainer}>
         <View style={Styles.inputContainer}>
           <TextInput  

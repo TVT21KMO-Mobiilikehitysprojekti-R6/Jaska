@@ -24,6 +24,7 @@ export default function MainPage({navigation, route, username, password}) {
   const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
   const [washType, setWashType] = useState('')
+  const [avgConsumptionShort, setAvgConsumptionShort] = useState (0)
   //const [displayName, setDisplayName] = useState('');
 
 
@@ -88,7 +89,47 @@ export default function MainPage({navigation, route, username, password}) {
       getData();
   },[route.params?.price])
 
-  const getData = async() => {      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa                
+  const averageConsumptionShort = (allEvents) => {
+    var i = 0;
+    var initialMileage = parseInt(allEvents[i].mileage)
+    var initialMileage2 = 0;
+    var litres1 = parseInt(allEvents[i].litres);
+    var litres2 = 0;
+
+    while(initialMileage == 0){
+      i++;
+      initialMileage = parseInt(allEvents[i].mileage)
+      if(isNaN(initialMileage) == true){ initialMileage = 0 }
+    }
+    while(initialMileage2 == 0){
+      i++
+      initialMileage2 = parseInt(allEvents[i].mileage)
+      if(isNaN(initialMileage2) == true){ initialMileage2 = 0 }
+    }
+    var mileageChange = initialMileage-initialMileage2
+
+
+    while(litres1 == 0){
+      i++;
+      litres1 = parseInt(allEvents[i].litres)
+      if(isNaN(litres1) == true){ litres1 = 0 }
+    }
+    while(litres2 == 0){
+      i++
+      litres2 = parseInt(allEvents[i].litres)
+      if(isNaN(litres2) == true){ litres2 = 0 }
+    }
+    
+    var litresChange = litres1 - litres2
+
+    setAvgConsumptionShort(litres1/mileageChange)
+    console.log("avgcons", avgConsumptionShort)
+
+
+    
+  }
+
+  const getData = async() => {      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa           
     const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.loggedUser2 ), orderBy('created','desc'))
     const unsubscribe = onSnapshot(q,(querySnapshot) => {
       const tempMessages = [] 
@@ -105,6 +146,8 @@ export default function MainPage({navigation, route, username, password}) {
         tempMessages.push(messageObject)
       })  
       setAllEvents(tempMessages)
+      averageConsumptionShort(tempMessages);     
+
     })  
     return () => {
       unsubscribe()
@@ -173,11 +216,9 @@ export default function MainPage({navigation, route, username, password}) {
                     <View style={Styles.allEventsList} key={id.id}>
                       <View>
                         {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
-                        {id.price!= null && <Text style={Styles.listText}>Keskikulutus</Text>}
+                        {id.litres!= null && <Text style={Styles.listText}>Keskikulutus { avgConsumptionShort }</Text>}
                         {id.wash == 1 && <Text style={Styles.listText}>Sisäpesu</Text>}
                         {id.wash == 2 && <Text style={Styles.listText}>Ulkopesu</Text>}
-
-
                         {id.litres!= null && <Text style={Styles.listText}>Tankkaus {id.litres}L</Text>}
                       </View>
                       <View>
@@ -191,14 +232,7 @@ export default function MainPage({navigation, route, username, password}) {
                           </Pressable> 
                         </View>}
                       
-                        
-                      
-                      
-                      
-        
-
-                    </View>
-                                    
+                    </View>               
                     ))
                 }
                 </ScrollView>

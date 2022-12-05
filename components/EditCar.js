@@ -25,7 +25,7 @@ export default function EditCar({route, navigation, allEvents}) {
   var carDataVar = 0
   const [mileageSinceStart, setMileageSinceStart] = useState (0)
   const [ AvgConsumptionLong, setAvgConsumptionLong] = useState (0)
-  const [AVGConsumptionShort, setAvgConsumptionShort] = useState (0)
+  
 
 
   useEffect(() => {  
@@ -131,7 +131,7 @@ export default function EditCar({route, navigation, allEvents}) {
       {carData != [] &&<Text> Käyttöönottopäivä {carData[0].created}</Text> } 
       {carData != [] &&<Text> Kokonaiskustannukset {allPrices} €</Text> }
       {carData != [] &&<Text> Kokonaiskilometrit alusta {mileageSinceStart} </Text> }  
-      {carData != [] &&<Text> Kokonaiskulutus ohjelman käyttöönototsta {AvgConsumptionLong} L/100KM </Text> }  
+      {carData != [] &&<Text> Kokonaiskulutus ohjelman käyttöönototsta {AvgConsumptionLong.toFixed(2)} L/100KM </Text> }  
     </View>
     )
   }
