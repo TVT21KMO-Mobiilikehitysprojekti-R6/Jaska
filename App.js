@@ -8,6 +8,7 @@ import StartPage from './components/StartPage';
 import AddNewEvent from './components/AddNewEvent';
 import { firestone } from './firebase/Config'
 import editCar from './components/EditCar';
+import Maintenance from './components/Maintenance';
 
 
 export default function App() {
@@ -42,6 +43,11 @@ export default function App() {
           <Stack.Screen 
           name="editCar" 
           component={editCar} 
+          options={{title: 'Muokkaa autoa'}}
+          />
+          <Stack.Screen 
+          name="maintenance" 
+          component={Maintenance} 
           options={{title: 'Muokkaa autoa'}}
           />
           

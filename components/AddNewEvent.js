@@ -8,6 +8,7 @@ import { getAuth, onAuthStateChanged} from "firebase/auth";
 
 
 export default function AddNewEvent({route, navigation}) {
+  const [maintenance, onChangetMaintenance] = useState(null)
   const [litres, onChangeLitres] = useState(null);
   const [mileage, onChangeMileage] = useState(null);
   const [price, onChangePrice] = useState(null);
@@ -36,10 +37,13 @@ export default function AddNewEvent({route, navigation}) {
         alert('Something went wrong!!')
         console.log("tyhjä lisäys kenttä")
     } if (event === 'fuel') {
-        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID})
+        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID,maintenance: maintenance})
     } if (event === 'wash') {
-      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID})
+      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, maintenance: maintenance})
   }   
+  if (event === 'maintenance') {
+    navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, maintenance: maintenance})
+}   
 }
     const status = route.params.testKey
     if (status == 'fuel') {
