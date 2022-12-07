@@ -39,9 +39,9 @@ export default function MainPage({navigation, route, login5, username, password}
   setEditButtonPressed(!editButtonPressed)
 } 
 
-const toFireBase = async (litres,mileage,price,wash,userID ) => {      //Tämä lisää firebaseen 
+const toFireBase = async (litres,mileage,price,wash,userID, maintenance ) => {      //Tämä lisää firebaseen 
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    data: litres, mileage, price, wash, 
+    data: litres, mileage, price, wash, maintenance, 
     created: serverTimestamp(),
     user: userID,
   }).catch(error => console.log(error))
@@ -84,7 +84,8 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
       const newPrice = {price: route.params.price};
       const newWash = {wash: route.params.wash};
       const newUser = {user: route.params.userID}
-      toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user);
+      const newMaintenance = {maintenance: route.params.maintenance}
+      toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user, newMaintenance);
      // console.log("uusitestie", allEvents)
   }
     getData();
@@ -102,7 +103,8 @@ const getData = async() => {                                      //useEffect ku
         price: doc.data().price.price, 
         wash: doc.data().wash.wash,
         created: convertFirbaseTimeStampToJS(doc.data().created),
-        user: doc.data().user
+        user: doc.data().user,
+        maintenance: doc.data().maintenance.maintenance
       }
       tempMessages.push(messageObject)
     })  
@@ -116,6 +118,11 @@ const getData = async() => {                                      //useEffect ku
 const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio
   setModalVisible(!modalVisible)
   navigation.navigate('AddNewEvent', {testKey: event})
+  }
+
+  const newErrorHandle = (event) => {              //Tämä on modalin käyttöfunktio
+  setModalVisible(!modalVisible)
+  navigation.navigate('maintenance', {testKey: event})
   }
 
 
@@ -164,6 +171,11 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                     onPress={() => newFuelerHandle('wash')}>
                     <Text style={Styles.textStyle}>Uusi Pesu</Text>
                   </Pressable>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => newErrorHandle('maintenance')}>
+                    <Text style={Styles.textStyle}>Uusi huolto</Text>
+                  </Pressable>
                 </View>
               </View>
             </Modal>
@@ -177,6 +189,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                     <View>
                       {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
                       {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
+                      {id.maintenance!= null && <Text style={Styles.listText}>{id.maintenance} Huolto</Text>}
                     </View>
                     <View>
                       <Text style={Styles.listText}>{id.created}</Text> 
