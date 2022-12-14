@@ -23,6 +23,8 @@ export default function MainPage({navigation, route, login5, username, password}
   const [editButtonPressed, setEditButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
+  const [washType, setWashType] = useState('')
+  const [avgConsumptionShort, setAvgConsumptionShort] = useState (0)
   //const [displayName, setDisplayName] = useState('');
 
   //console.log(allEvents)
@@ -39,9 +41,22 @@ export default function MainPage({navigation, route, login5, username, password}
   setEditButtonPressed(!editButtonPressed)
 } 
 
-const toFireBase = async (litres,mileage,price,wash,userID, maintenance ) => {      //Tämä lisää firebaseen 
+const toFireBase = async (litres,mileage,price,wash,userID, maintenance, avgConsumptionShort ) => {      //Tämä lisää firebaseen 
+  var i = 0;
+    var latestMileage = mileage.mileage
+    var secondLatestMileage = 0;
+    var latestFuel = litres.litres;
+    
+    while(isNaN(secondLatestMileage)|| secondLatestMileage == 0){
+      i++
+      secondLatestMileage = parseInt(allEvents[i].mileage)
+      if(isNaN(secondLatestMileage) == true){ secondLatestMileage = 0 }
+    }
+    var mileageChange = latestMileage-secondLatestMileage
+    var AVGC = (latestFuel/mileageChange*100).toFixed(2)
+
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
-    data: litres, mileage, price, wash, maintenance, 
+    data: litres, mileage, price, wash, maintenance, AVGC, 
     created: serverTimestamp(),
     user: userID,
   }).catch(error => console.log(error))
@@ -75,7 +90,7 @@ useLayoutEffect( () => {              //Tämä lisää stack navigaattoriin napi
   }) 
 }, [editButtonPressed])  
 
-useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
+useEffect((allEvents) => {  //Tämä hakee datan firebasesta, vai hakeeko?
   setLogged(true)      //tämä lisätty
   if(route.params?.price) { // muoks oli pricve
       getData();
@@ -85,14 +100,54 @@ useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
       const newWash = {wash: route.params.wash};
       const newUser = {user: route.params.userID}
       const newMaintenance = {maintenance: route.params.maintenance}
-      toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user, newMaintenance);
+      toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user, newMaintenance, avgConsumptionShort);
      // console.log("uusitestie", allEvents)
   }
     getData();
 },[route.params?.price])
 
+const averageConsumptionShort = async() => {
+  var i = 0;
+  var latestMileage = parseInt(allEvents[i].mileage)
+  var secondLatestMileage = 0;
+  var latestFuel = parseInt(allEvents[i].litres);
+  var litres2 = 0;
+  while(isNaN(latestMileage)){
+    i++;
+    latestMileage = parseInt(allEvents[i].mileage)
+    if(isNaN(latestMileage) == true){ latestMileage = 0 }
+  }
+  while(isNaN(secondLatestMileage)|| secondLatestMileage == 0){
+    i++
+    secondLatestMileage = parseInt(allEvents[i].mileage)
+    if(isNaN(secondLatestMileage) == true){ secondLatestMileage = 0 }
+  }
+  var mileageChange = latestMileage-secondLatestMileage
+
+  while(isNaN(latestFuel)){
+    i++;
+    latestFuel = parseInt(allEvents[i].litres)
+    if(isNaN(latestFuel) == true){ latestFuel = 0 }
+  }
+  while(litres2 == 0){
+    i++
+    litres2 = parseInt(allEvents[i].litres)
+    if(isNaN(litres2) == true){ litres2 = 0 }
+  }
+  var litresChange = latestFuel - litres2
+  console.log("litres1", latestFuel)
+  console.log("milagecahge", mileageChange)
+
+  setAvgConsumptionShort(latestFuel/mileageChange*100)
+  console.log("avgcons", avgConsumptionShort)
+
+
+  
+}
+
+
 const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
-   const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
+   const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.loggedUser2 ), orderBy('created','desc'))
    const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
     querySnapshot.forEach((doc) => {
@@ -104,6 +159,7 @@ const getData = async() => {                                      //useEffect ku
         wash: doc.data().wash.wash,
         created: convertFirbaseTimeStampToJS(doc.data().created),
         user: doc.data().user,
+        AVGC: doc.data().AVGC,
         maintenance: doc.data().maintenance.maintenance
       }
       tempMessages.push(messageObject)
@@ -188,8 +244,12 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                   <View style={Styles.allEventsList} key={id.id}>
                     <View>
                       {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
-                      {id.litres!= null && <Text style={Styles.listText}>{id.litres}L</Text>}
+                      {id.litres!= null && <Text style={Styles.listText}>Keskikulutus { id.AVGC } L/100km</Text>}
+                      {id.wash == 1 && <Text style={Styles.listText}>Sisäpesu</Text>}
+                        {id.wash == 2 && <Text style={Styles.listText}>Ulkopesu</Text>}
                       {id.maintenance!= null && <Text style={Styles.listText}>{id.maintenance} Huolto</Text>}
+                      {id.litres!= null && <Text style={Styles.listText}>Tankkaus {id.litres}L</Text>}
+
                     </View>
                     <View>
                       <Text style={Styles.listText}>{id.created}</Text> 
@@ -226,4 +286,3 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   console.log("EI onnistu");
 };
 } 
-

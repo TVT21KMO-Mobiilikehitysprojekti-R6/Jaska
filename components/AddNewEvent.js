@@ -17,7 +17,7 @@ export default function AddNewEvent({route, navigation}) {
   const auth = getAuth();
   const user = auth.currentUser;
   var radio_props = [
-    {label: 'Ulkopesu', value: 0 },
+    {label: 'Ulkopesu', value: 2 },
     {label: 'Sisäpesu', value: 1 }
   ]
 
@@ -37,12 +37,12 @@ export default function AddNewEvent({route, navigation}) {
         alert('Something went wrong!!')
         console.log("tyhjä lisäys kenttä")
     } if (event === 'fuel') {
-        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID,maintenance: maintenance})
+        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID,maintenance: maintenance, loggedUser2: userID})
     } if (event === 'wash') {
-      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, maintenance: maintenance})
+      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, maintenance: maintenance, loggedUser2: userID})
   }   
   if (event === 'maintenance') {
-    navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, maintenance: maintenance})
+    navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, maintenance: maintenance, loggedUser2: userID})
 }   
 }
     const status = route.params.testKey
@@ -97,7 +97,7 @@ export default function AddNewEvent({route, navigation}) {
          <Text>Anna pesun tyyppi</Text>
          <RadioForm
             radio_props={radio_props}
-            initial={0}
+            initial={2}
             buttonColor={'black'}
             selectedButtonColor = 'black'
             onPress={(value) => onChangeWash(value)}

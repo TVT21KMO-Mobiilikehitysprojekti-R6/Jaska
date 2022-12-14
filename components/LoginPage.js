@@ -47,7 +47,7 @@ export default function LoginPage({navigation, setLogin}) {
       .then((userCredential) => {
         setLogin2(true)
         //console.log("testiä loginsivun loginfunktiossa", userCredential)
-        navigation.navigate("MainPage", {login5: userCredential.user.uid}, {carPlate: userCredential.user.displayName})
+        navigation.navigate("MainPage", {loggedUser2: userCredential.user.uid}, {carPlate: userCredential.user.displayName})
         
       }).catch((error) => {
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {

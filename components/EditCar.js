@@ -24,10 +24,11 @@ export default function EditCar({route, navigation, allEvents}) {
   var currentMileage = 0
   var carDataVar = 0
   const [mileageSinceStart, setMileageSinceStart] = useState (0)
+  const [ AvgConsumptionLong, setAvgConsumptionLong] = useState (0)
 
 
-  useEffect(() => {  //Tämä hakee datan firebasesta, vai hakeeko?
-    //setLoggedUser(route.params?.loggedUser);
+
+  useEffect(() => {  
     if(route.params?.loggedUser) {
         getData(); 
     }
@@ -43,9 +44,16 @@ export default function EditCar({route, navigation, allEvents}) {
     setAllPrices(totalPrice);     
   }
 
-  const averageConsumption = () => {
+  const averageConsumption = (allEvents) => {
     var initialMileage = parseInt(carDataVar[0].carMileage)
     setMileageSinceStart (currentMileage-initialMileage)
+    var totalLitres = 0;
+     for(let i = 0; i < allEvents.length; i++) {
+      var litres2 = parseInt(allEvents[i].litres)
+      if(isNaN(litres2) == true){ litres2 = 0 }
+      totalLitres += litres2
+    } 
+     setAvgConsumptionLong((totalLitres/(currentMileage-initialMileage))*100)
   }
 
   const getLatestMileage = () => {
@@ -60,8 +68,6 @@ export default function EditCar({route, navigation, allEvents}) {
 
   const getData = async() => {     
     getLatestMileage();
-    
-    //console.log("currenntt", currentMileage);
     calculatePrice(route.params?.allEvents);
     const q = query(collection(firestore,initialCarData),  where("user", "==", route.params?.loggedUser ),  orderBy('created','desc'))
     const unsubscribe = onSnapshot(q,(querySnapshot) => {
@@ -81,7 +87,7 @@ export default function EditCar({route, navigation, allEvents}) {
     })
     carDataVar = tempMessages
     setCarData(tempMessages)
-    averageConsumption();
+    averageConsumption(route.params?.allEvents);
 
     })   
     return () => {
@@ -132,7 +138,9 @@ export default function EditCar({route, navigation, allEvents}) {
       {carData != [] &&<Text> Ajokilometrit sovelluksen käyttöönotossa {carData[0].carMileage}</Text> }
       {carData != [] &&<Text> Käyttöönottopäivä {carData[0].created}</Text> } 
       {carData != [] &&<Text> Kokonaiskustannukset {allPrices} €</Text> }
-      {carData != [] &&<Text> Kokonaiskilometrit alusta {mileageSinceStart} </Text> }  
+      {carData != [] &&<Text> Kokonaiskilometrit alusta {mileageSinceStart} </Text> } 
+      {carData != [] &&<Text> Kokonaiskulutus ohjelman käyttöönototsta {AvgConsumptionLong.toFixed(2)} L/100KM </Text> }  
+ 
     </View>
     )
   }
