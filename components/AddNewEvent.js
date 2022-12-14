@@ -8,6 +8,7 @@ import { getAuth, onAuthStateChanged} from "firebase/auth";
 
 
 export default function AddNewEvent({route, navigation}) {
+  const [maintenance, onChangetMaintenance] = useState(null)
   const [litres, onChangeLitres] = useState(null);
   const [mileage, onChangeMileage] = useState(null);
   const [price, onChangePrice] = useState(null);
@@ -36,13 +37,53 @@ export default function AddNewEvent({route, navigation}) {
         alert('Something went wrong!!')
         console.log("tyhjä lisäys kenttä")
     } if (event === 'fuel') {
-        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, loggedUser2: userID})
+
+        navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID,loggedUser2: userID, maintenance: maintenance})
     } if (event === 'wash') {
-      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, loggedUser2: userID})
+      navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, maintenance: maintenance, loggedUser2: userID})
   }   
-  }
-  const status = route.params.testKey
-  if (status == 'fuel') {
+  if (event === 'maintenance') {
+    navigation.navigate('MainPage', {litres: litres, mileage: mileage, price: price, wash: wash, userID: userID, maintenance: maintenance, loggedUser2: userID})
+}   
+}
+    const status = route.params.testKey
+    if (status == 'fuel') {
+  return (
+    <View style={Styles.centeredView}>
+        <Text>Lisätään tankkaus</Text>
+        <Text></Text>
+        <Text>Anna litrat</Text>
+          <TextInput
+            style={Styles.baitWindowText}
+            onChangeText={onChangeLitres}
+            value={litres}
+            placeholder="Tähän litrat"
+            keyboardType="numeric"
+          />
+      <Text>Anna Kilometrit</Text>
+      <TextInput
+        style={Styles.baitWindowText}
+        onChangeText={onChangeMileage}
+        value={mileage}
+        placeholder="Tähän kilometrit"
+        keyboardType="numeric"
+      />
+      <Text>Anna Hinta</Text>
+      <TextInput
+        style={Styles.baitWindowText}
+        onChangeText={onChangePrice}
+        value={price}
+        placeholder="Tähän tankkauksen hinta"
+        keyboardType="numeric"
+      />
+      <Button title= "Lisää tankkaus"
+            style={Styles.button} 
+            onPress={ ()=> acceptEvent('fuel') }>Lisää tankkaus</Button>
+    </View>
+  ) }
+
+
+  if (status == 'wash') {
     return (
       <View style={Styles.centeredView}>
           <Text>Lisätään tankkaus</Text>

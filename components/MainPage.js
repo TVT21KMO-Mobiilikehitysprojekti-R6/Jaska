@@ -54,6 +54,15 @@ export default function MainPage({navigation, route, username, password}) {
     var AVGC = (latestFuel/mileageChange*100).toFixed(2)
 
 
+const toFireBase = async (litres,mileage,price,wash,userID, maintenance ) => {      //Tämä lisää firebaseen 
+  const docRef = await addDoc(collection(firestore,ADDEVENT),{
+    data: litres, mileage, price, wash, maintenance, 
+    created: serverTimestamp(),
+    user: userID,
+  }).catch(error => console.log(error))
+}
+
+
     const docRef = await addDoc(collection(firestore,ADDEVENT),{
       data: litres, mileage, price, wash, AVGC,
       created: serverTimestamp(),
@@ -97,7 +106,8 @@ export default function MainPage({navigation, route, username, password}) {
         const newPrice = {price: route.params.price};
         const newWash = {wash: route.params.wash};
         const newUser = {user: route.params.userID}
-        toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user, avgConsumptionShort);
+      const newMaintenance = {maintenance: route.params.maintenance}
+      toFireBase(newLitres, newMileage, newPrice, newWash, newUser.user, newMaintenance);
       // console.log("uusitestie", allEvents)
     }
       getData();
@@ -139,6 +149,28 @@ export default function MainPage({navigation, route, username, password}) {
     console.log("avgcons", avgConsumptionShort)
 
 
+
+const getData = async() => {                                      //useEffect kutsuuu tätä fuktioa avuksi hakemaan dataa
+   const q = query(collection(firestore,ADDEVENT), where("user", "==", route.params?.login5 ), orderBy('created','desc'))
+   const unsubscribe = onSnapshot(q,(querySnapshot) => {
+    const tempMessages = [] 
+    querySnapshot.forEach((doc) => {
+      const messageObject = {
+        id: doc.id,                           //luetaan firebasesta automaattinen avain
+        litres: doc.data().data.litres, 
+        mileage: doc.data().mileage.mileage,  
+        price: doc.data().price.price, 
+        wash: doc.data().wash.wash,
+        created: convertFirbaseTimeStampToJS(doc.data().created),
+        user: doc.data().user,
+        maintenance: doc.data().maintenance.maintenance
+      }
+      tempMessages.push(messageObject)
+    })  
+    setAllEvents(tempMessages)
+  })  
+  return () => {
+    unsubscribe()
     
   }
 
@@ -167,6 +199,11 @@ export default function MainPage({navigation, route, username, password}) {
       
     }
   }
+  const newErrorHandle = (event) => {              //Tämä on modalin käyttöfunktio
+  setModalVisible(!modalVisible)
+  navigation.navigate('maintenance', {testKey: event})
+  }
+
 
   const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfunktio
     setModalVisible(!modalVisible)
@@ -186,43 +223,47 @@ export default function MainPage({navigation, route, username, password}) {
           <Text style={Styles.textStyle}>Kirjaudu ulos</Text>
           </Pressable>}
       
-        <Text style={Styles.heading}> Tapahtumat  {carData} </Text>
-        
-          <View style={Styles.ScrollView}>
-            <View style={Styles.centeredView}>
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                  Alert.alert('Modal has been closed.');
-                  setModalVisible(!modalVisible);
-                }}>
-                <View style={Styles.centeredView}>
-                  <View style={Styles.modalView}>
-                    <Text style={Styles.modalText}>Valitse tapahtuma, </Text>
-                    <Text style={Styles.modalText}>jonka haluat lisätä.</Text>
-                    <Pressable
-                      style={[Styles.button, Styles.button]}
-                      onPress={() => setModalVisible(!modalVisible)}>
-                      <Text style={Styles.textStyle}>Hide Modal</Text>
-                    </Pressable>
-                    <Pressable
-                      style={[Styles.button, Styles.button]}
-                      onPress={() => newFuelerHandle('fuel')}>
-                      <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
-                    </Pressable>
-                    <Pressable
-                      style={[Styles.button, Styles.button]}
-                      onPress={() => newFuelerHandle('wash')}>
-                      <Text style={Styles.textStyle}>Uusi Pesu</Text>
-                    </Pressable>
-                  </View>
+
+        <View style={Styles.ScrollView}>
+          <View style={Styles.centeredView}>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+              }}>
+              <View style={Styles.centeredView}>
+                <View style={Styles.modalView}>
+                  <Text style={Styles.modalText}>Valitse tapahtuma, </Text>
+                  <Text style={Styles.modalText}>jonka haluat lisätä.</Text>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={Styles.textStyle}>Hide Modal</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => newFuelerHandle('fuel')}>
+                    <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => newFuelerHandle('wash')}>
+                    <Text style={Styles.textStyle}>Uusi Pesu</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => newErrorHandle('maintenance')}>
+                    <Text style={Styles.textStyle}>Uusi huolto</Text>
+                  </Pressable>
                 </View>
               </Modal>
             </View>
 
             <ScrollView>
+
 
                 {
                   allEvents.map((id) => (
@@ -233,11 +274,14 @@ export default function MainPage({navigation, route, username, password}) {
                         {id.wash == 1 && <Text style={Styles.listText}>Sisäpesu</Text>}
                         {id.wash == 2 && <Text style={Styles.listText}>Ulkopesu</Text>}
                         {id.litres!= null && <Text style={Styles.listText}>Tankkaus {id.litres}L</Text>}
+                        {id.maintenance!= null && <Text style={Styles.listText}>{id.maintenance} Huolto</Text>}
+
                       </View>
                       <View>
                         <Text style={Styles.listText}>{id.created}</Text> 
                         {id.mileage!= null && <Text style={Styles.listText}>{id.mileage}Km</Text>}
                       </View>
+
                       
                       {editButtonPressed != false && <View> 
                           <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }>
