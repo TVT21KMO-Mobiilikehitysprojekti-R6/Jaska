@@ -9,7 +9,7 @@ export default function StartPage({navigation, setLogin}) {
   return (
     <View style={Styles.container}>
       <Text style={Styles.heading}> Tervetuloa Jaskaan! </Text>
-        <View>
+      <View>
           <Pressable style={Styles.button} 
             onPress={ () => navigation.navigate('LoginPage')}> 
                  <Text style={Styles.buttonText}>aaaa</Text> 
