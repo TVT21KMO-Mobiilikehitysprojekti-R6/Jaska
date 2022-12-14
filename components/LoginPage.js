@@ -26,7 +26,7 @@ export default function LoginPage({navigation, setLogin}) {
   const [login2, setLogin2] = useState(false);
   const [userID, setUserID] = useState('');
   const nakki=getAuth();
-  //console.log(nakki)
+  //console.log(nakki) // tämä on tärkeä
 
   const [passwordVisibility, setPasswordVisibility] = useState(true);  
   const [rightIcon, setRightIcon] = useState('eye');
@@ -42,23 +42,23 @@ export default function LoginPage({navigation, setLogin}) {
   };
 
   const login = () => {
-      const auth = getAuth()
-      signInWithEmailAndPassword(auth,email,password)
-      .then((userCredential) => {
-        setLogin2(true)
-        //console.log("testiä loginsivun loginfunktiossa", userCredential)
-        navigation.navigate("MainPage", {login5: userCredential.user.uid}, {carPlate: userCredential.user.displayName})
-        
-      }).catch((error) => {
-        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-          alert("Inalid credentials!")
-        } else if (error.code === 'auth/too-many-requests') {
-          alert("Too many attempts, your account will be locked temporarility")
-        } else {
-          console.log (error.code)
-          console.log (error.message)
-        }
-      })
+    const auth = getAuth()
+    signInWithEmailAndPassword(auth,email,password)
+    .then((userCredential) => {
+      //setLogin2(true) // tää otettu pois ku ei varmaa tee mitää
+      //console.log("testiä loginsivun loginfunktiossa", userCredential)
+      navigation.navigate("MainPage", {loggedUser2: userCredential.user.uid}, {carPlate: userCredential.user.displayName})
+      
+    }).catch((error) => {
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        alert("Inalid credentials!")
+      } else if (error.code === 'auth/too-many-requests') {
+        alert("Too many attempts, your account will be locked temporarility")
+      } else {
+        console.log (error.code)
+        console.log (error.message)
+      }
+    })
     } 
     
 useEffect(  () => { 
@@ -67,21 +67,21 @@ useEffect(  () => {
     
 const signOut = () => {           //Tämä kirjkaa käyttäjän ulos, tarkista toiminta
   const auth = getAuth();
-signOut(auth).then(() => {
+  signOut(auth).then(() => {
   console.log("Sign-out successful")
 }).catch((error) => {
   // An error happened.
 });
 }    
 
- const auth = getAuth();
+const auth = getAuth();
 onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
   if (user) {
     const uid = user.uid;
     setLoggedUser(uid);
     setCarPlate(user.displayName)
   } else {
-    console.log("Ei ole kirjautunut")
+    //console.log("Ei oasdfasdfasdasfd kirjautunut")
   }
 });   
 
@@ -219,7 +219,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
             onPress={ () => carCreatedButton()}
             color="#841584"
             />
-            {console.log( "rivi 200" ,  loggedUser)}
+           
          {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
           <Text style={Styles.heading}>{displayName}</Text>
           </View>     
@@ -232,17 +232,6 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
               </View>
             </Modal>
           </View>
-
-
-
-
-
-
-
-
-
-
-
       <View style={Styles.loginContainer}>
         <View style={Styles.inputContainer}>
           <TextInput  

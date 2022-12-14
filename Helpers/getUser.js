@@ -4,7 +4,7 @@
 
 
 
-onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
+/* onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
     if (user) {
       const uid = user.uid;
       setLoggedUser(uid);
@@ -14,3 +14,4 @@ onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautun
     }
   });  
 
+ */
