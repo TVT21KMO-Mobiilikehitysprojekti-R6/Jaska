@@ -56,10 +56,20 @@ export default function EditCar({route, navigation, allEvents}) {
      setAvgConsumptionLong((totalLitres/(currentMileage-initialMileage))*100)
   }
 
-  const getLatestMileage = () => {
+  const getLatestMileage = (carData) => {
     var i=0
-     currentMileage = route.params?.allEvents[i].mileage
+    console.log('1',currentMileage)      
+    if (carData != []){ currentMileage = carData[0].carMileage}
+
+    //currentMileage = route.params?.allEvents[i].mileage 
+    if(route.params?.allEvents.length==0){
+      console.log('tyhja')
+      console.log('1',currentMileage)      
+
+    }
     while (currentMileage == null){
+      console.log('1',currentMileage)      
+
       i++;
       currentMileage = route.params?.allEvents[i].mileage
     }
@@ -67,14 +77,14 @@ export default function EditCar({route, navigation, allEvents}) {
 
 
   const getData = async() => {     
-    getLatestMileage();
+    //getLatestMileage();
     calculatePrice(route.params?.allEvents);
     const q = query(collection(firestore,initialCarData),  where("user", "==", route.params?.loggedUser ),  orderBy('created','desc'))
     const unsubscribe = onSnapshot(q,(querySnapshot) => {
     const tempMessages = [] 
     setCarData([])
     querySnapshot.forEach((doc) => {
-    // console.log("tötö")
+     console.log("tötö")
       const messageObject = {
         id: doc.id,                           //luetaan firebasesta automaattinen avain
         carModel: doc.data().carModel, 
@@ -85,6 +95,7 @@ export default function EditCar({route, navigation, allEvents}) {
       }
       tempMessages.push(messageObject)
     })
+    getLatestMileage(carData);
     carDataVar = tempMessages
     setCarData(tempMessages)
     averageConsumption(route.params?.allEvents);

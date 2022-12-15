@@ -120,7 +120,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
   }
 
  const carCreatedButton = () => {
-  toFireBase({carMake, carModel, carMileage, loggedUser})
+  toFireBase({carMake, carModel, carMileage,  loggedUser})
   setModalCarData(!modalCarData)
  }
 
