@@ -213,11 +213,6 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                   <Text style={Styles.modalText}>jonka haluat lisätä.</Text>
                   <Pressable
                     style={[Styles.button, Styles.button]}
-                    onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={Styles.textStyle}>Hide Modal</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[Styles.button, Styles.button]}
                     onPress={() => newFuelerHandle('fuel')}>
                     <Text style={Styles.textStyle}>Uusi Tankkaus</Text>
                   </Pressable>
@@ -230,6 +225,11 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                     style={[Styles.button, Styles.button]}
                     onPress={() => newErrorHandle('maintenance')}>
                     <Text style={Styles.textStyle}>Uusi huolto</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={Styles.textStyle}>Peruuta</Text>
                   </Pressable>
                 </View>
               </View>
