@@ -42,26 +42,25 @@ export default function MainPage({navigation, route, login5, username, password}
 } 
 
 const toFireBase = async (litres,mileage,price,wash,userID, maintenance, avgConsumptionShort ) => {      //Tämä lisää firebaseen 
-  var i = 0;
+    var i = 0;
     var latestMileage = mileage.mileage
     var secondLatestMileage = 0;
     var latestFuel = litres.litres;
-    
     while(isNaN(secondLatestMileage)|| secondLatestMileage == 0){
       i++
-      secondLatestMileage = parseInt(allEvents[i].mileage)
+      if(allEvents[i] != undefined){
+        secondLatestMileage = parseInt(allEvents[i].mileage)
+      }else {secondLatestMileage=latestMileage}
       if(isNaN(secondLatestMileage) == true){ secondLatestMileage = 0 }
-    }
-    var mileageChange = latestMileage-secondLatestMileage
-    var AVGC = (latestFuel/mileageChange*100).toFixed(2)
-
+    } 
+  var mileageChange = latestMileage-secondLatestMileage
+  var AVGC = (latestFuel/mileageChange*100).toFixed(2)
   const docRef = await addDoc(collection(firestore,ADDEVENT),{
     data: litres, mileage, price, wash, maintenance, AVGC, 
     created: serverTimestamp(),
     user: userID,
   }).catch(error => console.log(error))
 }
-
 
 onAuthStateChanged(auth, (user) => {        //Tämä hakee firebasesta kirjautuneen käyttäjän
       if (user) {
@@ -189,7 +188,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
     <View style={Styles.container}>
         {editButtonPressed != false && <Pressable style={Styles.button} 
         onPress={() => navigation.navigate('editCar', {carData: carData, loggedUser: loggedUser, allEvents: allEvents}) }>
-        <Text style={Styles.textStyle}>Muokkaa autoa</Text>
+        <Text style={Styles.textStyle}>Auton Tiedot</Text>
         </Pressable>}
         {editButtonPressed != false && <Pressable style={Styles.button} 
         onPress={() => SignOut() }>
@@ -243,24 +242,27 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                 allEvents.map((id) => (
                   <View style={Styles.allEventsList} key={id.id}>
                     <View>
-                      {id.price!= null && <Text style={Styles.listText}>{id.price}€</Text>}
-                      {id.litres!= null && <Text style={Styles.listText}>Keskikulutus { id.AVGC } L/100km</Text>}
-                      {id.wash == 1 && <Text style={Styles.listText}>Sisäpesu</Text>}
-                        {id.wash == 2 && <Text style={Styles.listText}>Ulkopesu</Text>}
-                      {id.maintenance!= null && <Text style={Styles.listText}>{id.maintenance} Huolto</Text>}
-                      {id.litres!= null && <Text style={Styles.listText}>Tankkaus {id.litres}L</Text>}
-
-                    </View>
-                    <View>
                       <Text style={Styles.listText}>{id.created}</Text> 
-                      {id.mileage!= null && <Text style={Styles.listText}>{id.mileage}Km</Text>}
-                    </View>
-                    
-                    {editButtonPressed != false && <View> 
+                      {editButtonPressed != false && <View> 
                         <Pressable style={Styles.button} onPress={() => deleteThis(id.id) }>
                           <Text style={Styles.textStyle}>Poista</Text>
                         </Pressable> 
                       </View>}
+                    </View>
+                    <View>
+                      {id.price!= null && <Text style={Styles.listText}>Hinta {id.price}€</Text>}
+                      {id.litres!= null && <Text style={Styles.listText}>Keskikulutus { id.AVGC } L/100km</Text>}
+                      {id.wash == 1 && <Text style={Styles.listText}>Sisäpesu</Text>}
+                      {id.wash == 2 && <Text style={Styles.listText}>Ulkopesu</Text>}
+                      {id.maintenance!= null && <Text style={Styles.listText}>{id.maintenance} Huolto</Text>}
+                      {id.litres!= null && <Text style={Styles.listText}>Tankkaus {id.litres}L</Text>}
+                      {id.mileage!= null && <Text style={Styles.listText}>Kilometrit {id.mileage}Km</Text>}
+
+
+                    </View>
+                    
+                    
+                    
                     
                       
                     
