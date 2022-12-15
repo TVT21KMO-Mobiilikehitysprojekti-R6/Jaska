@@ -47,11 +47,11 @@ const toFireBase = async (litres,mileage,price,wash,userID, maintenance, avgCons
     var secondLatestMileage = 0;
     var latestFuel = litres.litres;
     
-    while(isNaN(secondLatestMileage)|| secondLatestMileage == 0){
+     while(isNaN(secondLatestMileage)|| secondLatestMileage == 0){
       i++
       secondLatestMileage = parseInt(allEvents[i].mileage)
       if(isNaN(secondLatestMileage) == true){ secondLatestMileage = 0 }
-    }
+    } 
     var mileageChange = latestMileage-secondLatestMileage
     var AVGC = (latestFuel/mileageChange*100).toFixed(2)
 
