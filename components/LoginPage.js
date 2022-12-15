@@ -129,7 +129,7 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
       <Text style={Styles.heading}> Hey please login</Text>
 
         <View style={Styles.centeredView}>                    
-            <Modal                                                  
+            <Modal
               animationType="slide"
               transparent={true}
               visible={modalCreateUser}
@@ -138,35 +138,43 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                 setModalCreateUser(!modalCreateUser);
               }}>
               <View style={Styles.centeredView}>
-                <View style={Styles.modalView}>
-                <Text style={Styles.heading}> Create user</Text>
-      <View style={Styles.input}>
+                 <View style={Styles.modalView}>
+                 <Text style={Styles.heading}> Luo käyttäjätunnus </Text>
+      <View style={Styles.loginContainer}>
+        <View style={Styles.inputContainer}>
           <TextInput  
-            sstyle={{flex: 0.75}}
             onChangeText={text => setEmail(text)}
             value={email}
             keyboardType='email-address'
-            placeholder="Give your name to login..."       
+            placeholder="Anna sähköposti"       
             />
+        </View>
+        <View style={Styles.inputContainer}>
             <TextInput  
-            sstyle={{flex: 0.75}}
-            onChangeText={text => setPassword(text)}
-            value={password}
-            placeholder="Give your pasword to login..."       
+              onChangeText={text => setPassword(text)}
+              secureTextEntry={passwordVisibility}
+              value={password}
+              placeholder="Give your pasword to login..."       
             />
+            <Pressable onPress={handlePasswordVisibility}>
+              <MaterialCommunityIcons name={rightIcon} size={22}   />
+            </Pressable>
+        </View>
+        <View style={Styles.inputContainer}>
             <TextInput  
-            sstyle={{flex: 0.75}}
             onChangeText={text => setDisplayName(text)}
             value={displayName}
             keyboardType='email-address'
             placeholder="Tähän rekisterinumero"       
             />
+        </View>
+
             <Pressable style={Styles.button} 
                 onPress={ ()=> createUser(email, password, displayName)}>
               <Text style={Styles.textStyle}>Luo tunnus</Text>
             </Pressable>
          {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
-          </View>     
+      </View>     
                   <Pressable
                     style={[Styles.button, Styles.button]}
                     onPress={() => setModalCreateUser(!modalCreateUser)}>
@@ -194,34 +202,40 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
                 <View style={Styles.modalView}>
                   
                 <Text style={Styles.heading}> Auton tietojen automaattinen haku epäonnistui, Anna auton tiedot</Text>
-      <View style={Styles.input}>
+                <Text style={Styles.heading}> Rekisterinumero {displayName}</Text>
+                
+      <View style={Styles.loginContainer}>
+      <View style={Styles.inputContainer}>
           <TextInput  
             sstyle={{flex: 0.75}}
             onChangeText={text => setCarMake(text)}
             value={carMake}
             placeholder="Auton merkki"       
             />
+            </View>
+            <View style={Styles.inputContainer}>
             <TextInput  
             sstyle={{flex: 0.75}}
             onChangeText={text => setCarModel(text)}
             value={carModel}
             placeholder="Anna malli"       
             />
+            </View>
+            <View style={Styles.inputContainer}>
             <TextInput  
             sstyle={{flex: 0.75}}
             onChangeText={text => setCarMileage(text)}
             value={carMileage}
             placeholder="Tähän kilometrit"       
-            />
-            <Button style={Styles.buttonLogIn} 
-            title="Luo auto" 
-            /* onPress={ ()=> toFireBase({carMake, carModel, carMileage, loggedUser})} */
-            onPress={ () => carCreatedButton()}
-            color="#841584"
-            />
-            {console.log( "rivi 200" ,  loggedUser)}
+            /></View>
+            <Pressable
+                    style={[Styles.button, Styles.button]}
+                    onPress={() => carCreatedButton()}>
+                    <Text style={Styles.textStyle}>Luo Auto</Text>  
+                  </Pressable>
+            
          {userCreated != 0 && <Text style={Styles.heading}>Käyttäjätunnus luotu, kirjaudu sisään!!!!</Text>}
-          <Text style={Styles.heading}>{displayName}</Text>
+          
           </View>     
                   <Pressable
                     style={[Styles.button, Styles.button]}
@@ -232,17 +246,6 @@ const newFuelerHandle = (event) => {              //Tämä on modalin käyttöfu
               </View>
             </Modal>
           </View>
-
-
-
-
-
-
-
-
-
-
-
       <View style={Styles.loginContainer}>
         <View style={Styles.inputContainer}>
           <TextInput  

@@ -33,7 +33,7 @@ export default function App() {
           <Stack.Screen 
           name="MainPage" 
           component={MainPage} 
-          options={{title: 'MainPage'}}
+          options={{title: 'Tapahtumat'}}
           />
           <Stack.Screen 
           name="AddNewEvent" 
@@ -43,7 +43,7 @@ export default function App() {
           <Stack.Screen 
           name="editCar" 
           component={editCar} 
-          options={{title: 'Muokkaa autoa'}}
+          options={{title: 'Auton Tiedot'}}
           />
           <Stack.Screen 
           name="maintenance" 

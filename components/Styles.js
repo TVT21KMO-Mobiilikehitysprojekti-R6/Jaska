@@ -11,9 +11,8 @@ export default  StyleSheet.create({
   },
   heading: {  // yläpalkki sis.auto rekkari
     width: '96%',
-    height: 25,
     backgroundColor: '#008000',
-    marginTop:0,
+    marginTop:10,
     marginBottom:10,
     textAlign:'center',
     fontWeight: 'bold',
@@ -62,10 +61,23 @@ export default  StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
   },
-  
+  loginContainer2: { // login-ruutu
+    
+    width: '96%',
+    borderWidth: 2,
+    borderColor: '#008000',
+    padding: 20,
+    margin: 10,
+    marginTop: 100,
+    borderRadius: 5
+  },
 listText:{ //teksti ruutujen tekstien välit
   //display: 'flex',
   padding: 5,
+},
+listText2:{ //teksti ruutujen tekstien välit
+  display: 'flex',
+  padding: 7,
 },
 centeredView: { //tapahtumien asettelu
   flex: 0,
@@ -77,11 +89,12 @@ centeredView: { //tapahtumien asettelu
 
 modalView: { // lisaa tapahtumasta aukeavan ponnahdus ikkunan speksit
   margin: 10,
+  width: '96%',
   backgroundColor: '#ffffff',
   borderWidth: 2,
   borderColor: '#000000',
-  borderRadius: 0,
-  padding: 50,
+  borderRadius: 2,
+  padding: 5,
   alignItems: 'center',
   shadowColor: '#000',
   shadowOffset: {
@@ -91,7 +104,7 @@ modalView: { // lisaa tapahtumasta aukeavan ponnahdus ikkunan speksit
   shadowOpacity: 0.25,
   shadowRadius: 4,
   elevation: 0,
-  marginTop:110,
+  marginTop:10,
 },
 
 

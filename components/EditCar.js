@@ -133,17 +133,10 @@ export default function EditCar({route, navigation, allEvents}) {
 
   if (carData != '') {
     return(
-    <View> 
+    <View style={Styles.loginContainer2}> 
+    <View style={Styles.listText2}>
       <Text> Rekisterinumero {route.params?.carData}</Text> 
       {carData != null && <Text> Auton merkki {carData[0].carMake} </Text>}
-      <TextInput  
-        sstyle={{flex: 0.75}}
-        onChangeText={text => setCarMake(text)}
-        value={carMake}
-        keyboardType='email-address'
-        placeholder="Tähän uusi merkki tarvitaanko tätä??"       
-      />
-
       {carData != [] &&<Text> Auton Malli {carData[0].carModel}</Text> }
       {carData != [] &&<Text> Ajokilometrit sovelluksen käyttöönotossa {carData[0].carMileage}</Text> }
       {carData != [] &&<Text> Käyttöönottopäivä {carData[0].created}</Text> } 
@@ -151,6 +144,7 @@ export default function EditCar({route, navigation, allEvents}) {
       {carData != [] &&<Text> Kokonaiskilometrit alusta {mileageSinceStart} </Text> } 
       {carData != [] &&<Text> Kokonaiskulutus ohjelman käyttöönototsta {AvgConsumptionLong.toFixed(2)} L/100KM </Text> }  
  
+    </View>
     </View>
     )
   }
